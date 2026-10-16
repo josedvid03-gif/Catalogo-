@@ -1547,3 +1547,84 @@ textarea:focus {
   width: 130px;
   flex: none;
 }
+
+/* ---------- Inversores ---------- */
+.tarjeta-inversion {
+  color: inherit;
+  text-decoration: none;
+}
+.plazo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.plazo-barra {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--superficie-2);
+  overflow: hidden;
+}
+.plazo-barra span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--acento);
+}
+.lista-pagos {
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  gap: 0;
+}
+.lista-pagos a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 10px;
+  color: inherit;
+  text-decoration: none;
+}
+.lista-pagos a:hover {
+  background: var(--superficie-2);
+}
+.lista-pagos .etiqueta {
+  align-self: flex-end;
+}
+.cronograma {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.cronograma li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--borde);
+}
+.cronograma li:last-child {
+  border-bottom: 0;
+}
+.cronograma .venta-lado {
+  gap: 4px;
+}
+.cronograma .etiqueta {
+  align-self: flex-end;
+}
+.cuota-capital strong {
+  color: var(--acento);
+}
+.fila-plazo {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.fila-plazo input {
+  width: 80px;
+  text-align: center;
+}
+.resumen-inversion .fila-total span:last-child {
+  text-align: right;
+}

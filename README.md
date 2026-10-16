@@ -23,6 +23,15 @@ Se instala en la pantalla de inicio como una app y todos los dispositivos ven lo
   y junta las prendas repetidas como varias unidades. Antes de importar puedes revisar y corregir todo.
 - **Costos de compra**: una lista para llenar rápido los costos que falten. Si vendes algo antes de ponerle
   el costo, al ponérselo la ganancia de esa venta se corrige sola.
+- **Inversores**: registras a cada inversor y su inversión de dos formas:
+  - *Interés fijo mensual* (ej. 5% al mes sobre $5.000.000 durante 6 meses): el interés se paga cada mes
+    y el capital al final.
+  - *% de las ganancias* (ej. 30% de la ganancia de las ventas de cada mes) y el capital al final.
+
+  La app arma el cronograma de pagos, muestra plazos (fecha de devolución y días que faltan), rentabilidad
+  (mensual, total y efectiva anual), pagos vencidos y cuánto te queda del mes después de pagar a los
+  inversores. Cada pago se registra (se aceptan abonos parciales) y puedes enviarle al inversor su
+  extracto por WhatsApp. Solo tú y tu equipo ven esta sección.
 - **Historial** de cada producto: entradas, ventas, ajustes y anulaciones, con quién lo hizo.
 - **Catálogo público** (`/catalogo`) para compartir por WhatsApp o Instagram. Muestra fotos, precios y tallas
   disponibles, con un botón para pedir por WhatsApp. **Nunca muestra costos ni ganancias.**
@@ -41,6 +50,9 @@ Necesitas dos cuentas gratuitas: **Supabase** (base de datos y fotos) y **Vercel
 3. Copia todo el contenido de [`supabase/schema.sql`](supabase/schema.sql) y pégalo.
 4. Al final del archivo, cambia `tu-correo@ejemplo.com` por **tu correo**.
 5. Presiona **Run**. Debe decir *Success*.
+
+> Cuando la app reciba mejoras que cambien la base de datos (como Inversores), vuelve a pegar y ejecutar
+> el archivo completo. Se puede ejecutar varias veces y **no borra tus datos**.
 
 ### 2. Crear los usuarios
 
@@ -98,6 +110,8 @@ Vercel publica la rama principal (`main`). Cada cambio que se suba a GitHub se p
 | Llegó mercancía | **Productos** → el producto → sube el stock de la talla → *Guardar cambios* |
 | Cargar muchos productos | **Productos → Importar** (pegar desde Excel) |
 | Poner costos de compra | **Productos → Costos de compra** (aparece el aviso si faltan) |
+| Registrar un inversor | **Inversores** (ícono 📈 arriba) → **Nueva** |
+| Pagarle a un inversor | **Inversores** → el inversor → *Pagar* en el cronograma |
 | Producto nuevo | **Productos → Nuevo** → fotos, datos, tallas → *Crear producto* |
 | Corregir una venta | **Ventas** → toca la venta → *Anular venta* |
 | Compartir el catálogo | **Ajustes → Catálogo para clientes → Compartir** |
@@ -130,5 +144,6 @@ supabase/schema.sql   tablas, vista de inventario, funciones, permisos (RLS) y b
 src/lib/              cliente de Supabase, formatos (COP, fechas), sesión, fotos
 src/components/       diseño general, carrito, campos y componentes comunes
 src/pages/            Resumen, Productos, ProductoForm, Vender, Apartados, NuevoApartado,
-                      Ventas, Ajustes, Importar, Costos, Catalogo (público), Login
+                      Ventas, Ajustes, Importar, Costos, Inversores, InversionForm,
+                      InversionDetalle, Catalogo (público), Login
 ```

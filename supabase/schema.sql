@@ -672,6 +672,47 @@ as $$
 $$;
 
 -- ---------------------------------------------------------------------
+--  Inversores
+--    tipo 'interes'   → tasa = % de interés mensual sobre el capital;
+--                       el interés se paga cada mes y el capital al final.
+--    tipo 'ganancias' → tasa = % de la ganancia de las ventas de cada mes.
+-- ---------------------------------------------------------------------
+create table if not exists public.inversores (
+  id         uuid primary key default gen_random_uuid(),
+  nombre     text not null check (length(trim(nombre)) > 0),
+  telefono   text,
+  created_at timestamptz not null default now()
+);
+create unique index if not exists inversores_nombre_idx on public.inversores (lower(trim(nombre)));
+
+create table if not exists public.inversiones (
+  id           uuid primary key default gen_random_uuid(),
+  inversor_id  uuid not null references public.inversores(id) on delete restrict,
+  fecha_inicio date not null default public.hoy_colombia(),
+  monto        integer not null check (monto > 0),
+  tipo         text not null check (tipo in ('interes', 'ganancias')),
+  tasa         numeric(6,3) not null check (tasa >= 0 and tasa <= 100),
+  plazo_meses  int not null check (plazo_meses between 1 and 120),
+  estado       text not null default 'activa' check (estado in ('activa', 'finalizada')),
+  nota         text,
+  created_at   timestamptz not null default now()
+);
+create index if not exists inversiones_inversor_idx on public.inversiones(inversor_id);
+
+create table if not exists public.pagos_inversion (
+  id           uuid primary key default gen_random_uuid(),
+  inversion_id uuid not null references public.inversiones(id) on delete cascade,
+  fecha        date not null default public.hoy_colombia(),
+  tipo         text not null check (tipo in ('rendimiento', 'capital')),
+  monto        integer not null check (monto > 0),
+  periodo      text check (periodo ~ '^\d{4}-\d{2}$'),  -- mes de ganancias que se paga (AAAA-MM)
+  nota         text,
+  creado_por   text default (auth.jwt() ->> 'email'),
+  created_at   timestamptz not null default now()
+);
+create index if not exists pagos_inversion_idx on public.pagos_inversion(inversion_id);
+
+-- ---------------------------------------------------------------------
 --  Seguridad: solo el equipo puede leer/escribir. El público solo ve
 --  el catálogo y las fotos.
 -- ---------------------------------------------------------------------
@@ -684,13 +725,17 @@ alter table public.venta_items    enable row level security;
 alter table public.apartados      enable row level security;
 alter table public.apartado_items enable row level security;
 alter table public.movimientos    enable row level security;
+alter table public.inversores      enable row level security;
+alter table public.inversiones     enable row level security;
+alter table public.pagos_inversion enable row level security;
 
 do $$
 declare
   t text;
 begin
   foreach t in array array['equipo', 'ajustes', 'productos', 'variantes', 'ventas',
-                           'venta_items', 'apartados', 'apartado_items', 'movimientos']
+                           'venta_items', 'apartados', 'apartado_items', 'movimientos',
+                           'inversores', 'inversiones', 'pagos_inversion']
   loop
     execute format('drop policy if exists "solo equipo" on public.%I', t);
     execute format(

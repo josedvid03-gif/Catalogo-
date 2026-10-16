@@ -23,6 +23,7 @@ const RUTAS: Record<string, string> = {
   caja: 'M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8',
   reloj: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',
   ojo: 'M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+  inversores: 'M3 17l6-6 4 4 8-8M15 7h6v6',
   copiar: 'M9 9h11v11H9zM5 15H4V4h11v1',
 }
 

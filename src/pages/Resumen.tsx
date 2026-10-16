@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom'
 import { supabase, datos } from '../lib/supabase'
 import { useCarga } from '../lib/hooks'
 import { useAjustes } from '../lib/sesion'
-import { cop, diasHasta, mesActual, moverMes, nombreMes, num, rangoMes, varianteTexto } from '../lib/format'
+import { cop, diasHasta, hoyColombia, mesActual, moverMes, nombreMes, num, rangoMes, varianteTexto } from '../lib/format'
 import type { ItemInventario, MetodoPago } from '../lib/types'
 import { METODOS } from '../lib/types'
 import { CajaError, Cargando, Dato, Foto } from '../components/Comunes'
 import { Icono } from '../components/Icono'
+import { cargarInversiones } from '../lib/datosInversiones'
+import { resumirInversion } from '../lib/inversiones'
 
 interface VentaMes {
   total: number
@@ -46,6 +48,13 @@ export function Resumen() {
         await supabase.from('apartados').select('total, anticipo, fecha_limite').eq('estado', 'activo'),
       ) as ApartadoActivo[],
   )
+
+  // Los pagos a inversores no bloquean el resumen si fallan.
+  const inversiones = useCarga(() => cargarInversiones())
+  const pagosInversores = (inversiones.data?.inversiones ?? [])
+    .filter((i) => i.estado === 'activa')
+    .flatMap((i) => resumirInversion(i, hoyColombia(), inversiones.data!.ganancias).vencidas)
+  const deudaInversores = pagosInversores.reduce((s, c) => s + c.monto - c.pagado, 0)
 
   const error = inv.error || ventas.error || apartados.error
   if (error) {
@@ -113,6 +122,14 @@ export function Resumen() {
       </div>
 
       {cargandoTodo && <Cargando />}
+
+      {pagosInversores.length > 0 && (
+        <Link to="/inversores" className="alerta-linea">
+          <Icono nombre="inversores" />
+          {pagosInversores.length} pago{pagosInversores.length === 1 ? '' : 's'} a inversores por hacer:{' '}
+          {cop(deudaInversores)} →
+        </Link>
+      )}
 
       {sinCosto > 0 && (
         <Link to="/productos/costos" className="alerta-linea">

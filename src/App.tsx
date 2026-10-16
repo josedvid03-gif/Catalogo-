@@ -16,6 +16,9 @@ import { Ajustes } from './pages/Ajustes'
 import { Catalogo } from './pages/Catalogo'
 import { Importar } from './pages/Importar'
 import { Costos } from './pages/Costos'
+import { Inversores } from './pages/Inversores'
+import { InversionForm } from './pages/InversionForm'
+import { InversionDetalle } from './pages/InversionDetalle'
 
 function AppPrivada() {
   const { session, cargando, autorizado, salir } = useSesion()
@@ -36,6 +39,10 @@ function AppPrivada() {
         <Route path="apartados" element={<Apartados />} />
         <Route path="apartados/nuevo" element={<NuevoApartado />} />
         <Route path="ventas" element={<Ventas />} />
+        <Route path="inversores" element={<Inversores />} />
+        <Route path="inversores/nueva" element={<InversionForm key="nueva" />} />
+        <Route path="inversores/:id" element={<InversionDetalle />} />
+        <Route path="inversores/:id/editar" element={<InversionForm />} />
         <Route path="ajustes" element={<Ajustes />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
