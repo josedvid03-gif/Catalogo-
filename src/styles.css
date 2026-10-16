@@ -2632,3 +2632,56 @@ body.modo-catalogo .avisos {
   flex: 1;
   min-width: 160px;
 }
+
+/* WhatsApp flotante y preguntas rápidas */
+.cat-wa-flotante {
+  position: fixed;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 41;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 58px;
+  padding: 0 18px 0 16px;
+  border-radius: 999px;
+  background: #25d366;
+  color: #fff;
+  box-shadow: 0 10px 28px rgb(0 0 0 / 0.3);
+  font-weight: 700;
+  text-decoration: none;
+  transition: bottom 0.2s ease;
+}
+.cat-wa-flotante.elevado {
+  bottom: calc(84px + env(safe-area-inset-bottom));
+}
+@media (max-width: 480px) {
+  .cat-wa-texto {
+    display: none;
+  }
+  .cat-wa-flotante {
+    width: 58px;
+    padding: 0;
+    justify-content: center;
+  }
+}
+.cat-preguntas-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cat-pregunta {
+  padding: 8px 14px;
+  border: 1.5px solid var(--borde);
+  border-radius: 999px;
+  background: var(--superficie);
+  color: var(--texto);
+  font-size: 0.88rem;
+  text-decoration: none;
+}
+.cat-pregunta:hover {
+  border-color: var(--texto);
+}
+body.modo-catalogo .avisos {
+  bottom: calc(150px + env(safe-area-inset-bottom));
+}

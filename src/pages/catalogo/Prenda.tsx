@@ -227,6 +227,34 @@ export function PrendaPublica() {
             </button>
           </div>
 
+          {tienda?.whatsapp && (
+            <div className="cat-preguntas">
+              <span className="cat-etiqueta">Pregúntanos por WhatsApp</span>
+              <div className="cat-preguntas-lista">
+                {[
+                  '¿Está disponible?',
+                  '¿Tienen otra talla o color?',
+                  '¿Cuánto cuesta el envío a mi ciudad?',
+                  '¿Me envías más fotos o un video?',
+                  '¿Me la pueden apartar?',
+                ].map((pregunta) => (
+                  <a
+                    key={pregunta}
+                    className="cat-pregunta"
+                    href={enlaceWhatsapp(
+                      tienda.whatsapp!,
+                      `Hola 👋 ${pregunta}\n${p.nombre}${elegida ? ` — Talla ${varianteTexto(elegida.talla, elegida.color)}` : ''} — ${cop(p.precio)}\n${urlPrendaPublica(p.id)}`,
+                    )}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {pregunta}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
           {p.descripcion && <p className="cat-descripcion">{p.descripcion}</p>}
 
           <ul className="cat-datos">

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, Outlet } from 'react-router-dom'
+import { Link, Outlet, useMatch } from 'react-router-dom'
 import { urlFoto } from '../../lib/supabase'
 import { cop, enlaceWhatsapp, ordenTalla } from '../../lib/format'
 import { CajaError, Cantidad, Cargando, Hoja } from '../../components/Comunes'
@@ -30,7 +30,12 @@ export function MarcoCatalogo() {
 }
 
 function MarcoInterno() {
-  const { tienda, pedido, setPedidoAbierto } = useCatalogo()
+  const { tienda, pedido, setPedidoAbierto, prendas } = useCatalogo()
+  const enPrenda = useMatch('/catalogo/p/:id')
+  const prendaActual = enPrenda ? prendas.find((p) => p.id === enPrenda.params.id) : undefined
+  const mensajeFlotante = prendaActual
+    ? `Hola ${tienda?.nombre ?? ''} 👋 Tengo una pregunta sobre: ${prendaActual.nombre} — ${cop(prendaActual.precio)}\n${urlPrendaPublica(prendaActual.id)}`
+    : `Hola ${tienda?.nombre ?? ''} 👋 Vi su catálogo y tengo una pregunta.`
   const unidades = pedido.reduce((s, l) => s + l.cantidad, 0)
   const total = pedido.reduce((s, l) => s + l.cantidad * l.precio, 0)
 
@@ -62,6 +67,18 @@ function MarcoInterno() {
           <Icono nombre="bolsa" />
           Ver pedido ({unidades}) · {cop(total)}
         </button>
+      )}
+      {tienda?.whatsapp && (
+        <a
+          className={`cat-wa-flotante ${unidades > 0 ? 'elevado' : ''}`}
+          href={enlaceWhatsapp(tienda.whatsapp, mensajeFlotante)}
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Escríbenos por WhatsApp"
+        >
+          <Icono nombre="chat" tam={26} />
+          <span className="cat-wa-texto">¿Preguntas?</span>
+        </a>
       )}
       <Pedido />
     </div>
