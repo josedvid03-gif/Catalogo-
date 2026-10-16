@@ -4,6 +4,7 @@ import { urlFoto } from '../../lib/supabase'
 import { cop, enlaceWhatsapp, ordenTalla } from '../../lib/format'
 import { CajaError, Cantidad, Cargando, Hoja } from '../../components/Comunes'
 import { Icono } from '../../components/Icono'
+import { useAvisar } from '../../lib/aviso'
 import {
   ProveedorCatalogo,
   descuento,
@@ -94,6 +95,7 @@ function PieCatalogo() {
       <strong className="cat-pie-nombre">{tienda.nombre}</strong>
       {tienda.eslogan && <span className="cat-pie-eslogan">{tienda.eslogan}</span>}
       {tienda.info && <p className="cat-pie-info">{tienda.info}</p>}
+      {tienda.pago?.nequi && <p className="cat-pie-info">Pagos por Nequi: {tienda.pago.nequi}</p>}
       <div className="cat-redes">
         {tienda.whatsapp && (
           <a
@@ -127,11 +129,53 @@ function PieCatalogo() {
 /*  Pedido (bolsa)                                                     */
 /* ------------------------------------------------------------------ */
 
+interface DatosEnvio {
+  entrega: 'envio' | 'recoger'
+  nombre: string
+  celular: string
+  cedula: string
+  ciudad: string
+  direccion: string
+  barrio: string
+}
+
+const CLAVE_DATOS = 'datos-envio-catalogo-v1'
+const datosVacios: DatosEnvio = { entrega: 'envio', nombre: '', celular: '', cedula: '', ciudad: '', direccion: '', barrio: '' }
+
+function leerDatos(): DatosEnvio {
+  try {
+    const t = localStorage.getItem(CLAVE_DATOS)
+    return t ? { ...datosVacios, ...(JSON.parse(t) as Partial<DatosEnvio>) } : datosVacios
+  } catch {
+    return datosVacios
+  }
+}
+
 function Pedido() {
+  const avisar = useAvisar()
   const { tienda, pedido, cambiarCantidad, quitar, vaciar, maximo, pedidoAbierto, setPedidoAbierto } = useCatalogo()
-  const [nombre, setNombre] = useState('')
+  const [d, setD] = useState<DatosEnvio>(leerDatos)
+  const [verQr, setVerQr] = useState(false)
+  const [intento, setIntento] = useState(false)
   const total = pedido.reduce((s, l) => s + l.cantidad * l.precio, 0)
   const unidades = pedido.reduce((s, l) => s + l.cantidad, 0)
+  const pago = tienda?.pago
+  const envio = d.entrega === 'envio'
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(CLAVE_DATOS, JSON.stringify(d))
+    } catch {
+      /* navegador sin almacenamiento */
+    }
+  }, [d])
+
+  const faltan = [
+    !d.nombre.trim() && 'nombre',
+    d.celular.replace(/\D/g, '').length < 7 && 'celular',
+    envio && !d.ciudad.trim() && 'ciudad',
+    envio && !d.direccion.trim() && 'dirección',
+  ].filter(Boolean) as string[]
 
   const mensaje = () =>
     [
@@ -144,12 +188,53 @@ function Pedido() {
           } — ${cop(l.precio * l.cantidad)}\n  ${urlPrendaPublica(l.productoId)}`,
       ),
       '',
-      `Total: ${cop(total)} (${unidades} prenda${unidades === 1 ? '' : 's'})`,
-      nombre.trim() ? `Mi nombre: ${nombre.trim()}` : '',
-    ]
-      .filter((x, i, arr) => x !== '' || arr[i - 1] !== '')
-      .join('\n')
-      .trim()
+      `*Total: ${cop(total)}* (${unidades} prenda${unidades === 1 ? '' : 's'})${envio ? ' + envío' : ''}`,
+      '',
+      envio ? '📦 *Datos de envío*' : '🛍️ *Recojo en persona*',
+      `Nombre: ${d.nombre.trim()}`,
+      `Celular: ${d.celular.trim()}`,
+      ...(d.cedula.trim() ? [`Cédula: ${d.cedula.trim()}`] : []),
+      ...(envio
+        ? [
+            `Ciudad: ${d.ciudad.trim()}`,
+            `Dirección: ${d.direccion.trim()}`,
+            ...(d.barrio.trim() ? [`Barrio / indicaciones: ${d.barrio.trim()}`] : []),
+          ]
+        : []),
+      '',
+      pago?.nequi
+        ? `💳 Pago por Nequi. Apenas me confirmes disponibilidad${envio ? ' y el valor del envío' : ''}, pago y te envío el comprobante.`
+        : `Quedo atento${envio ? ' al valor del envío y' : ''} a la forma de pago.`,
+    ].join('\n')
+
+  const enviar = () => {
+    setIntento(true)
+    if (faltan.length) {
+      avisar(`Falta: ${faltan.join(', ')}`, 'error')
+      return
+    }
+    if (!tienda?.whatsapp) return
+    window.open(enlaceWhatsapp(tienda.whatsapp, mensaje()), '_blank', 'noopener')
+  }
+
+  const copiar = async (texto: string, que: string) => {
+    try {
+      await navigator.clipboard.writeText(texto)
+      avisar(`${que} copiado`)
+    } catch {
+      avisar(texto)
+    }
+  }
+
+  const campo = (k: keyof Omit<DatosEnvio, 'entrega'>, etiqueta: string, extra: Record<string, string> = {}, requerido = false) => (
+    <label className={`campo ${intento && requerido && faltan.length && !String(d[k]).trim() ? 'campo-error' : ''}`}>
+      <span>
+        {etiqueta}
+        {requerido ? ' *' : ''}
+      </span>
+      <input value={d[k]} onChange={(e) => setD({ ...d, [k]: e.target.value })} {...extra} />
+    </label>
+  )
 
   return (
     <Hoja titulo="Tu pedido" abierta={pedidoAbierto} onCerrar={() => setPedidoAbierto(false)}>
@@ -190,23 +275,86 @@ function Pedido() {
             <span>Total</span>
             <span>{cop(total)}</span>
           </div>
-          <label className="campo">
-            <span>Tu nombre (opcional)</span>
-            <input value={nombre} onChange={(e) => setNombre(e.target.value)} autoComplete="name" />
-          </label>
+          {envio && <p className="sutil">+ valor del envío, que te confirmamos por WhatsApp.</p>}
+
+          <section className="cat-form">
+            <span className="cat-etiqueta">¿Cómo lo recibes?</span>
+            <div className="cat-tallas">
+              <button
+                type="button"
+                className={`cat-talla ${envio ? 'activo' : ''}`}
+                onClick={() => setD({ ...d, entrega: 'envio' })}
+              >
+                Envío a domicilio
+              </button>
+              <button
+                type="button"
+                className={`cat-talla ${!envio ? 'activo' : ''}`}
+                onClick={() => setD({ ...d, entrega: 'recoger' })}
+              >
+                Recoger en persona
+              </button>
+            </div>
+
+            <span className="cat-etiqueta">Tus datos</span>
+            {campo('nombre', 'Nombre completo', { autoComplete: 'name' }, true)}
+            <div className="dos-columnas">
+              {campo('celular', 'Celular', { type: 'tel', inputMode: 'tel', autoComplete: 'tel', placeholder: '300 123 4567' }, true)}
+              {campo('cedula', 'Cédula', { inputMode: 'numeric', placeholder: 'Para la guía' })}
+            </div>
+            {envio && (
+              <>
+                {campo('ciudad', 'Ciudad', { autoComplete: 'address-level2', placeholder: 'Ej: Bogotá' }, true)}
+                {campo('direccion', 'Dirección', { autoComplete: 'street-address', placeholder: 'Ej: Calle 45 # 12-34 apto 301' }, true)}
+                {campo('barrio', 'Barrio / indicaciones', { placeholder: 'Ej: Chapinero, portería, torre 2' })}
+              </>
+            )}
+          </section>
+
+          {(pago?.nequi || pago?.otros) && (
+            <section className="cat-pago">
+              <span className="cat-etiqueta">Cómo pagar</span>
+              <ol className="cat-pasos">
+                <li>Envía tu pedido por WhatsApp.</li>
+                <li>Te confirmamos disponibilidad{envio ? ' y el valor del envío' : ''}.</li>
+                <li>Pagas y nos envías el comprobante.</li>
+              </ol>
+              {pago.nequi && (
+                <div className="cat-nequi">
+                  <div className="cat-nequi-datos">
+                    <span className="cat-nequi-marca">Nequi</span>
+                    <strong className="cat-nequi-numero">{pago.nequi}</strong>
+                    {pago.titular && <span className="sutil">A nombre de {pago.titular}</span>}
+                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-sm"
+                    onClick={() => copiar(pago.nequi!.replace(/\D/g, ''), 'Número')}
+                  >
+                    <Icono nombre="copiar" tam={16} /> Copiar
+                  </button>
+                </div>
+              )}
+              {pago.qr && (
+                <>
+                  <button type="button" className="enlace" onClick={() => setVerQr(!verQr)}>
+                    {verQr ? 'Ocultar código QR' : 'Ver código QR de Nequi'}
+                  </button>
+                  {verQr && <img className="cat-qr" src={urlFoto(pago.qr)} alt="Código QR de Nequi" />}
+                </>
+              )}
+              {pago.otros && <p className="sutil cat-pago-otros">{pago.otros}</p>}
+            </section>
+          )}
+
           {tienda?.whatsapp ? (
-            <a
-              className="cat-btn cat-btn-oscuro cat-btn-bloque"
-              href={enlaceWhatsapp(tienda.whatsapp, mensaje())}
-              target="_blank"
-              rel="noreferrer"
-            >
+            <button type="button" className="cat-btn cat-btn-oscuro cat-btn-bloque" onClick={enviar}>
               <Icono nombre="chat" /> Enviar pedido por WhatsApp
-            </a>
+            </button>
           ) : (
             <p className="sutil">La tienda aún no tiene WhatsApp configurado.</p>
           )}
-          <p className="sutil centrado">Te confirmamos disponibilidad, envío y forma de pago por WhatsApp.</p>
+          <p className="sutil centrado">Tus datos solo se envían a la tienda por WhatsApp.</p>
           <button className="enlace centrado" onClick={vaciar}>
             Vaciar pedido
           </button>

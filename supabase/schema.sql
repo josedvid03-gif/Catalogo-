@@ -99,7 +99,7 @@ create table if not exists public.ventas (
   fecha       timestamptz not null default now(),
   cliente     text,
   metodo_pago text not null default 'efectivo'
-              check (metodo_pago in ('efectivo', 'transferencia', 'tarjeta', 'otro')),
+              check (metodo_pago in ('efectivo', 'nequi', 'transferencia', 'tarjeta', 'otro')),
   total       integer not null check (total >= 0),
   costo_total integer not null check (costo_total >= 0),
   nota        text,
@@ -133,7 +133,7 @@ create table if not exists public.apartados (
   total                integer not null check (total >= 0),
   anticipo             integer not null check (anticipo >= 0),
   metodo_pago_anticipo text not null default 'efectivo'
-                       check (metodo_pago_anticipo in ('efectivo', 'transferencia', 'tarjeta', 'otro')),
+                       check (metodo_pago_anticipo in ('efectivo', 'nequi', 'transferencia', 'tarjeta', 'otro')),
   estado               text not null default 'activo'
                        check (estado in ('activo', 'completado', 'cancelado')),
   anticipo_devuelto    boolean not null default false,
@@ -341,6 +341,12 @@ update public.productos set marca = public.adivinar_marca(nombre) where marca is
 -- Textos del catálogo
 alter table public.ajustes add column if not exists eslogan text default 'Original Supply · Colombia';
 alter table public.ajustes add column if not exists info_catalogo text;
+
+-- Medios de pago que se muestran en el catálogo
+alter table public.ajustes add column if not exists pago_nequi text;
+alter table public.ajustes add column if not exists pago_titular text;
+alter table public.ajustes add column if not exists pago_qr text;      -- ruta de la imagen del QR
+alter table public.ajustes add column if not exists pago_otros text;   -- otros medios (texto libre)
 
 -- ---------------------------------------------------------------------
 --  Clientes
@@ -745,7 +751,9 @@ as $$
   select json_build_object(
     'tienda', (
       select json_build_object('nombre', nombre_tienda, 'whatsapp', whatsapp, 'instagram', instagram,
-                               'eslogan', eslogan, 'info', info_catalogo)
+                               'eslogan', eslogan, 'info', info_catalogo,
+                               'pago', json_build_object('nequi', pago_nequi, 'titular', pago_titular,
+                                                         'qr', pago_qr, 'otros', pago_otros))
       from public.ajustes where id = 1
     ),
     'productos', coalesce((
@@ -819,7 +827,7 @@ create table if not exists public.gastos (
   descripcion text,
   monto       integer not null check (monto > 0),
   metodo_pago text not null default 'efectivo'
-              check (metodo_pago in ('efectivo', 'transferencia', 'tarjeta', 'otro')),
+              check (metodo_pago in ('efectivo', 'nequi', 'transferencia', 'tarjeta', 'otro')),
   creado_por  text default (auth.jwt() ->> 'email'),
   created_at  timestamptz not null default now()
 );

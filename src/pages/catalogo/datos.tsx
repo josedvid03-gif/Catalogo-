@@ -28,6 +28,7 @@ export interface TiendaCatalogo {
   instagram: string | null
   eslogan: string | null
   info: string | null
+  pago?: { nequi: string | null; titular: string | null; qr: string | null; otros: string | null }
 }
 
 export interface LineaPedido {

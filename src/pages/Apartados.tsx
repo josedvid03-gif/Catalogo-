@@ -155,7 +155,7 @@ export function Apartados() {
                   </a>
                   <a
                     className="btn btn-sm"
-                    href={enlaceWhatsapp(a.telefono, textoComprobante(a, ajustes.nombre_tienda))}
+                    href={enlaceWhatsapp(a.telefono, textoComprobante(a, ajustes.nombre_tienda, ajustes.pago_nequi))}
                     target="_blank"
                     rel="noreferrer"
                   >

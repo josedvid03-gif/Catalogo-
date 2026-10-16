@@ -1,7 +1,8 @@
-export type MetodoPago = 'efectivo' | 'transferencia' | 'tarjeta' | 'otro'
+export type MetodoPago = 'efectivo' | 'nequi' | 'transferencia' | 'tarjeta' | 'otro'
 
 export const METODOS: { id: MetodoPago; nombre: string }[] = [
   { id: 'efectivo', nombre: 'Efectivo' },
+  { id: 'nequi', nombre: 'Nequi' },
   { id: 'transferencia', nombre: 'Transferencia' },
   { id: 'tarjeta', nombre: 'Tarjeta' },
   { id: 'otro', nombre: 'Otro' },
@@ -57,6 +58,10 @@ export interface Ajustes {
   stock_minimo: number
   eslogan: string | null
   info_catalogo: string | null
+  pago_nequi: string | null
+  pago_titular: string | null
+  pago_qr: string | null
+  pago_otros: string | null
 }
 
 export interface LineaItem {

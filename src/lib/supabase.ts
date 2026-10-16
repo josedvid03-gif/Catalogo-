@@ -19,6 +19,9 @@ export function mensajeError(e: unknown): string {
   if (typeof e === 'string') return e
   const err = e as { message?: string; code?: string }
   if (err.code === '23505') return 'Ya existe un registro igual (revisa tallas/colores repetidos)'
+  if (err.code === '23514' && err.message?.includes('metodo_pago')) {
+    return 'Para usar Nequi como método de pago falta la actualización 03 de la base de datos (ver README)'
+  }
   if (err.code === 'PGRST205' || err.code === '42P01' || err.code === 'PGRST204' || err.code === '42703') {
     return 'Falta actualizar la base de datos: en Supabase → SQL Editor ejecuta el archivo de supabase/actualizaciones (ver README)'
   }

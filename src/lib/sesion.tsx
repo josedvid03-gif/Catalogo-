@@ -23,6 +23,10 @@ const AJUSTES_POR_DEFECTO: Ajustes = {
   stock_minimo: 1,
   eslogan: 'Original Supply · Colombia',
   info_catalogo: null,
+  pago_nequi: null,
+  pago_titular: null,
+  pago_qr: null,
+  pago_otros: null,
 }
 
 export function ProveedorSesion({ children }: { children: ReactNode }) {

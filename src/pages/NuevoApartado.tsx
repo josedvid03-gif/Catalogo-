@@ -16,7 +16,7 @@ export function anticipoSugerido(total: number, porcentaje: number) {
   return Math.min(total, Math.ceil((total * porcentaje) / 100 / 1000) * 1000)
 }
 
-export function textoComprobante(a: Apartado, tienda: string) {
+export function textoComprobante(a: Apartado, tienda: string, nequi?: string | null) {
   const prendas = a.apartado_items.map((i) => `• ${i.cantidad} x ${i.descripcion} — ${cop(i.precio_unit)}`).join('\n')
   return [
     `*${tienda}* — Apartado #${a.numero}`,
@@ -26,6 +26,7 @@ export function textoComprobante(a: Apartado, tienda: string) {
     `Anticipo: ${cop(a.anticipo)}`,
     `Saldo: ${cop(a.total - a.anticipo)}`,
     `Fecha límite para recoger: ${fecha(a.fecha_limite)}`,
+    ...(nequi && a.total - a.anticipo > 0 ? [`Puedes pagar el saldo por Nequi al ${nequi}`] : []),
     `Si no se completa el pago a tiempo, se devuelve el anticipo y las prendas vuelven a la venta.`,
   ].join('\n')
 }
@@ -101,7 +102,7 @@ export function NuevoApartado() {
             {creado.telefono && (
               <a
                 className="btn btn-sm"
-                href={enlaceWhatsapp(creado.telefono, textoComprobante(creado, ajustes.nombre_tienda))}
+                href={enlaceWhatsapp(creado.telefono, textoComprobante(creado, ajustes.nombre_tienda, ajustes.pago_nequi))}
                 target="_blank"
                 rel="noreferrer"
               >
