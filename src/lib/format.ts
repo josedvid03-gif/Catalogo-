@@ -100,3 +100,8 @@ export function ocultarNombre(nombre: string): string {
     .map((p, i) => (p.length <= 2 ? p : p.slice(0, i === 0 ? 2 : 3) + '……'))
     .join(' ')
 }
+
+/** % de descuento entre el precio de antes y el de ahora (hacia abajo: nunca promete más de lo real). */
+export function porcentajeRebaja(ahora: number, antes: number): number {
+  return Math.floor((1 - ahora / antes) * 100 + 1e-6)
+}

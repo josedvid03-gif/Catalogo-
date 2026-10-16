@@ -58,6 +58,10 @@ Se instala en la pantalla de inicio como una app y todos los dispositivos ven lo
   aparece **"Avisar a clientes"** con quienes usan esa talla.
 - **Marcas y rebajas**: la marca se detecta sola por el nombre (Nike, Dickies, Columbia…) y cada prenda
   puede tener un *precio antes* para mostrarla en rebaja.
+- **Promociones** (Productos → Promos): eliges el % (10, 20, 30…), filtras por categoría o marca, marcas
+  las prendas y ves *antes → ahora* y cuánto te queda de ganancia. Se quitan con un toque y vuelven a su
+  precio normal. En el catálogo salen con el precio tachado, una franja **REBAJAS** y el filtro *Rebajas*;
+  el enlace `/catalogo?rebajas` abre directo las prendas en promoción.
 - **Reportes**: gráfica de ventas y ganancia neta por mes, marcas y categorías que más se venden y
   cuántos días tardan en venderse.
 - **Exportar a Excel**: un archivo con todo (inventario, ventas, apartados, gastos, clientes,

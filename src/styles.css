@@ -275,6 +275,13 @@ textarea:focus {
   min-width: 0;
   overflow-wrap: break-word;
 }
+/* Si no caben título y botones, los botones bajan a otra línea en vez de aplastar el título. */
+.titulo-pagina:has(.acciones) {
+  flex-wrap: wrap;
+}
+.titulo-pagina:has(.acciones) h1 {
+  min-width: fit-content;
+}
 @media (max-width: 480px) {
   h1 {
     font-size: 1.4rem;
@@ -2833,4 +2840,115 @@ body.modo-catalogo .avisos {
 .mensaje-nota {
   min-height: 40px;
   font-size: 0.9rem;
+}
+
+/* ---------- Promociones ---------- */
+.tarjeta-cabeza {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.etiqueta-campo {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--texto-2);
+}
+.chip-numero {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.chip-numero input {
+  width: 3.2em;
+  min-height: 0;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  text-align: center;
+  font: inherit;
+}
+.lista-promo {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.lista-promo li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--borde);
+}
+.lista-promo li:last-child {
+  border-bottom: 0;
+}
+.lista-promo li.elegido {
+  background: var(--superficie-2);
+  margin: 0 -8px;
+  padding: 10px 8px;
+  border-radius: 10px;
+}
+.promo-fila {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+.promo-fila input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  accent-color: var(--acento);
+}
+
+/* ---------- Catálogo: rebajas ---------- */
+.cat-banda-rebajas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  width: 100%;
+  padding: 12px 16px;
+  border: 0;
+  background: #b3261e;
+  color: #fff;
+  font: inherit;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+.cat-banda-titulo {
+  font-family: var(--fuente-titulos);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.cat-banda-ir {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.cat-chip-rebajas {
+  border-color: #b3261e;
+  color: #b3261e;
+}
+.cat-chip-rebajas.activo {
+  background: #b3261e;
+  border-color: #b3261e;
+  color: #fff;
+}
+@media (prefers-color-scheme: dark) {
+  .cat-chip-rebajas {
+    border-color: #ff8a80;
+    color: #ff8a80;
+  }
+  .cat-chip-rebajas.activo {
+    color: #fff;
+  }
 }

@@ -400,6 +400,8 @@ export function Catalogo() {
   const [marca, setMarca] = useState('')
   const [talla, setTalla] = useState('')
   const [orden, setOrden] = useState<Orden>('recientes')
+  // /catalogo?rebajas abre directo en las rebajas (para compartir el enlace).
+  const [soloRebajas, setSoloRebajas] = useState(() => new URLSearchParams(location.search).has('rebajas'))
 
   const categorias = useMemo(
     () => [...new Set(prendas.map((p) => p.categoria).filter(Boolean) as string[])].sort(),
@@ -414,11 +416,18 @@ export function Catalogo() {
     [prendas],
   )
   const hayRebajas = prendas.some((p) => descuento(p) > 0)
+  const maxDescuento = Math.max(0, ...prendas.map(descuento))
+  const verRebajas = () => {
+    setSoloRebajas(true)
+    setCategoria('')
+    document.querySelector('.cat-filtros')?.scrollIntoView({ behavior: 'smooth' })
+  }
 
   const visibles = useMemo(() => {
     const q = normalizar(busqueda.trim())
     const lista = prendas.filter(
       (p) =>
+        (!soloRebajas || descuento(p) > 0) &&
         (!categoria || p.categoria === categoria) &&
         (!marca || p.marca === marca) &&
         (!talla || p.variantes.some((v) => v.talla === talla)) &&
@@ -429,9 +438,9 @@ export function Catalogo() {
     if (orden === 'mayor') ordenada.sort((a, b) => b.precio - a.precio)
     if (orden === 'rebajas') ordenada.sort((a, b) => descuento(b) - descuento(a))
     return ordenada
-  }, [prendas, busqueda, categoria, marca, talla, orden])
+  }, [prendas, busqueda, categoria, marca, talla, orden, soloRebajas])
 
-  const filtrando = Boolean(busqueda || categoria || marca || talla)
+  const filtrando = Boolean(busqueda || categoria || marca || talla || soloRebajas)
 
   return (
     <>
@@ -466,6 +475,16 @@ export function Catalogo() {
         </div>
       </section>
 
+      {hayRebajas && !soloRebajas && (
+        <button className="cat-banda-rebajas" onClick={verRebajas}>
+          <span className="cat-banda-titulo">Rebajas</span>
+          <span>Hasta -{maxDescuento}% en prendas seleccionadas</span>
+          <span className="cat-banda-ir">
+            Ver <Icono nombre="adelante" tam={16} />
+          </span>
+        </button>
+      )}
+
       <main className="cat-cuerpo">
         <div className="cat-filtros">
           <div className="buscador">
@@ -478,12 +497,27 @@ export function Catalogo() {
               aria-label="Buscar"
             />
           </div>
-          {categorias.length > 1 && (
+          {(categorias.length > 1 || hayRebajas) && (
             <nav className="cat-chips" aria-label="Categorías">
-              <button className={`cat-chip ${!categoria ? 'activo' : ''}`} onClick={() => setCategoria('')}>
+              <button
+                className={`cat-chip ${!categoria && !soloRebajas ? 'activo' : ''}`}
+                onClick={() => {
+                  setCategoria('')
+                  setSoloRebajas(false)
+                }}
+              >
                 Todo
               </button>
-              {categorias.map((c) => (
+              {hayRebajas && (
+                <button
+                  className={`cat-chip cat-chip-rebajas ${soloRebajas ? 'activo' : ''}`}
+                  onClick={() => setSoloRebajas(!soloRebajas)}
+                  aria-pressed={soloRebajas}
+                >
+                  Rebajas
+                </button>
+              )}
+              {categorias.length > 1 && categorias.map((c) => (
                 <button key={c} className={`cat-chip ${categoria === c ? 'activo' : ''}`} onClick={() => setCategoria(c)}>
                   {c}
                 </button>
@@ -527,6 +561,7 @@ export function Catalogo() {
                     setCategoria('')
                     setMarca('')
                     setTalla('')
+                    setSoloRebajas(false)
                   }}
                 >
                   Quitar filtros

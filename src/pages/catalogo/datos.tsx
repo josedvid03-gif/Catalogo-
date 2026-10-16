@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { supabase, datos } from '../../lib/supabase'
 import { useCarga } from '../../lib/hooks'
+import { porcentajeRebaja } from '../../lib/format'
 
 export interface VarianteCatalogo {
   id: string
@@ -234,6 +235,6 @@ export function useCatalogo(): Ctx {
 export const esNueva = (p: PrendaCatalogo) => Date.now() - new Date(p.created_at).getTime() < 14 * 86_400_000
 
 export const descuento = (p: Pick<PrendaCatalogo, 'precio' | 'precio_antes'>) =>
-  p.precio_antes && p.precio_antes > p.precio ? Math.round((1 - p.precio / p.precio_antes) * 100) : 0
+  p.precio_antes && p.precio_antes > p.precio ? porcentajeRebaja(p.precio, p.precio_antes) : 0
 
 export const urlPrendaPublica = (id: string) => `${window.location.origin}/catalogo/p/${id}`

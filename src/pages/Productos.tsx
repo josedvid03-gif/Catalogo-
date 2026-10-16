@@ -4,7 +4,7 @@ import { supabase, datos, mensajeError } from '../lib/supabase'
 import { useAvisar } from '../lib/aviso'
 import { useCarga } from '../lib/hooks'
 import { useAjustes } from '../lib/sesion'
-import { cop } from '../lib/format'
+import { cop, porcentajeRebaja } from '../lib/format'
 import type { ItemInventario, Producto } from '../lib/types'
 import { BotonAccion, CajaError, Cargando, Foto, Vacio } from '../components/Comunes'
 import { Icono } from '../components/Icono'
@@ -99,6 +99,9 @@ export function Productos() {
       <div className="titulo-pagina">
         <h1>Productos</h1>
         <div className="acciones">
+          <Link to="/productos/promociones" className="btn" aria-label="Promociones">
+            <Icono nombre="porcentaje" /> Promos
+          </Link>
           <Link to="/productos/importar" className="btn">
             Importar
           </Link>
@@ -211,7 +214,7 @@ export function Productos() {
                   <span className="etiqueta etiqueta-aviso">Poco stock</span>
                 ) : null}
                 {p.precio_antes && p.precio_antes > p.precio ? (
-                  <span className="etiqueta etiqueta-rebaja">-{Math.round((1 - p.precio / p.precio_antes) * 100)}%</span>
+                  <span className="etiqueta etiqueta-rebaja">-{porcentajeRebaja(p.precio, p.precio_antes)}%</span>
                 ) : null}
                 {!p.publicado && <span className="etiqueta">Oculto en catálogo</span>}
               </div>

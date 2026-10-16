@@ -19,6 +19,7 @@ import { Clientes, ClienteDetalle } from './pages/Clientes'
 import { Reportes } from './pages/Reportes'
 import { Exportar } from './pages/Exportar'
 import { Mensajes } from './pages/Mensajes'
+import { Promociones } from './pages/Promociones'
 import { Importar } from './pages/Importar'
 import { Costos } from './pages/Costos'
 import { Inversores } from './pages/Inversores'
@@ -41,6 +42,7 @@ function AppPrivada() {
         <Route path="productos/fotos" element={<FotosRapidas />} />
         <Route path="productos/costos" element={<Costos />} />
         <Route path="productos/importar" element={<Importar />} />
+        <Route path="productos/promociones" element={<Promociones />} />
         <Route path="productos/nuevo" element={<ProductoForm key="nuevo" />} />
         <Route path="productos/:id" element={<ProductoForm />} />
         <Route path="vender" element={<Vender />} />

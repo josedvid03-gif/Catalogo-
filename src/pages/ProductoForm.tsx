@@ -4,7 +4,7 @@ import { supabase, datos, mensajeError, urlFoto } from '../lib/supabase'
 import { borrarFotos, subirFoto } from '../lib/imagenes'
 import { useCarga } from '../lib/hooks'
 import { useAvisar } from '../lib/aviso'
-import { cop, fechaHora, margen, ordenTalla, varianteTexto } from '../lib/format'
+import { cop, fechaHora, margen, ordenTalla, porcentajeRebaja, varianteTexto } from '../lib/format'
 import type { ItemInventario, Producto } from '../lib/types'
 import { BotonAccion, CajaError, CampoPesos, Cargando } from '../components/Comunes'
 import { Icono } from '../components/Icono'
@@ -375,7 +375,7 @@ export function ProductoForm() {
         {precioAntes > 0 && precio > 0 && (
           <p className={precioAntes > precio ? 'nota-margen' : 'texto-error'}>
             {precioAntes > precio
-              ? `En el catálogo sale tachado ${cop(precioAntes)} → ${cop(precio)} (-${Math.round((1 - precio / precioAntes) * 100)}%)`
+              ? `En el catálogo sale tachado ${cop(precioAntes)} → ${cop(precio)} (-${porcentajeRebaja(precio, precioAntes)}%)`
               : 'El precio antes debe ser mayor que el precio de venta'}
           </p>
         )}
