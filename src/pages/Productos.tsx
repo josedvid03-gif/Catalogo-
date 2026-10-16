@@ -59,11 +59,16 @@ export function Productos() {
     )
   }, [carga.data, busqueda, categoria, archivados])
 
+  const sinCosto = (carga.data ?? []).filter((p) => p.activo && p.costo === 0).length
+
   return (
     <div className="pagina">
       <div className="titulo-pagina">
         <h1>Productos</h1>
         <div className="acciones">
+          <Link to="/productos/importar" className="btn">
+            Importar
+          </Link>
           <Link to="/productos/nuevo" className="btn btn-primario">
             <Icono nombre="mas" /> Nuevo
           </Link>
@@ -95,13 +100,21 @@ export function Productos() {
         </div>
       </div>
 
+      {sinCosto > 0 && (
+        <Link to="/productos/costos" className="alerta-linea">
+          <Icono nombre="alerta" />
+          {sinCosto} producto{sinCosto === 1 ? '' : 's'} sin costo de compra · Ponerlos
+        </Link>
+      )}
+
       {carga.error && <CajaError mensaje={carga.error} reintentar={carga.recargar} />}
       {carga.cargando && !carga.data && <Cargando />}
       {carga.data && visibles.length === 0 && (
         <Vacio icono="prendas">
           {carga.data.length === 0 ? (
             <>
-              Aún no tienes productos. <Link to="/productos/nuevo">Crea el primero</Link>.
+              Aún no tienes productos. <Link to="/productos/nuevo">Crea el primero</Link> o{' '}
+              <Link to="/productos/importar">impórtalos desde Excel</Link>.
             </>
           ) : (
             'No hay productos con esos filtros.'

@@ -18,6 +18,11 @@ Se instala en la pantalla de inicio como una app y todos los dispositivos ven lo
   - Se puede enviar el comprobante al cliente por WhatsApp.
 - **Resumen del mes**: ventas, ganancia, margen, ventas por método de pago, lo más vendido,
   apartados por vencer y prendas con poco stock.
+- **Importar desde Excel / Google Sheets**: copias las filas y las pegas. La app separa la talla del nombre
+  ("CAMISETA NIKE TALLA S" → Camiseta Nike, talla S), lee precios como "110.000", adivina la categoría
+  y junta las prendas repetidas como varias unidades. Antes de importar puedes revisar y corregir todo.
+- **Costos de compra**: una lista para llenar rápido los costos que falten. Si vendes algo antes de ponerle
+  el costo, al ponérselo la ganancia de esa venta se corrige sola.
 - **Historial** de cada producto: entradas, ventas, ajustes y anulaciones, con quién lo hizo.
 - **Catálogo público** (`/catalogo`) para compartir por WhatsApp o Instagram. Muestra fotos, precios y tallas
   disponibles, con un botón para pedir por WhatsApp. **Nunca muestra costos ni ganancias.**
@@ -67,7 +72,17 @@ La clave pública se puede usar en la app sin problema; los permisos los control
 
 Vercel publica la rama principal (`main`). Cada cambio que se suba a GitHub se publica solo.
 
-### 5. Instalar en el celular
+### 5. Cargar tu inventario desde Excel
+
+1. En Google Sheets selecciona las filas de productos (desde la columna del nombre hasta la del precio) y copia.
+2. En la app: **Productos → Importar** → pega → **Revisar productos**.
+3. Revisa que la columna del nombre y la del precio sean las correctas.
+4. Desmarca lo que ya se vendió (por ejemplo, las filas en rojo) y presiona **Importar**.
+5. Lo que está separado (filas en verde): impórtalo y créale el apartado en **Apartados → Nuevo**
+   con el anticipo que dejó el cliente.
+6. Cuando tengas los costos de compra: **Productos → aviso "sin costo" → Costos de compra**.
+
+### 6. Instalar en el celular
 
 - **Android (Chrome):** abre la dirección → menú ⋮ → *Agregar a la pantalla principal* / *Instalar app*.
 - **iPhone (Safari):** abre la dirección → botón compartir → *Agregar a inicio*.
@@ -81,6 +96,8 @@ Vercel publica la rama principal (`main`). Cada cambio que se suba a GitHub se p
 | Entregar un apartado | **Apartados** → *Entregar · cobrar saldo* |
 | Cancelar un apartado | **Apartados** → *Cancelar* (marca si ya devolviste el anticipo) |
 | Llegó mercancía | **Productos** → el producto → sube el stock de la talla → *Guardar cambios* |
+| Cargar muchos productos | **Productos → Importar** (pegar desde Excel) |
+| Poner costos de compra | **Productos → Costos de compra** (aparece el aviso si faltan) |
 | Producto nuevo | **Productos → Nuevo** → fotos, datos, tallas → *Crear producto* |
 | Corregir una venta | **Ventas** → toca la venta → *Anular venta* |
 | Compartir el catálogo | **Ajustes → Catálogo para clientes → Compartir** |
@@ -113,5 +130,5 @@ supabase/schema.sql   tablas, vista de inventario, funciones, permisos (RLS) y b
 src/lib/              cliente de Supabase, formatos (COP, fechas), sesión, fotos
 src/components/       diseño general, carrito, campos y componentes comunes
 src/pages/            Resumen, Productos, ProductoForm, Vender, Apartados, NuevoApartado,
-                      Ventas, Ajustes, Catalogo (público), Login
+                      Ventas, Ajustes, Importar, Costos, Catalogo (público), Login
 ```

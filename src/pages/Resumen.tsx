@@ -66,6 +66,7 @@ export function Resumen() {
   const unidades = items.reduce((s, i) => s + i.stock, 0)
   const valorCosto = items.reduce((s, i) => s + i.stock * i.costo, 0)
   const valorVenta = items.reduce((s, i) => s + i.stock * i.precio, 0)
+  const sinCosto = new Set(items.filter((i) => i.costo === 0).map((i) => i.producto_id)).size
   const bajos = items
     .filter((i) => i.disponible <= ajustes.stock_minimo)
     .sort((a, b) => a.disponible - b.disponible)
@@ -112,6 +113,14 @@ export function Resumen() {
       </div>
 
       {cargandoTodo && <Cargando />}
+
+      {sinCosto > 0 && (
+        <Link to="/productos/costos" className="alerta-linea">
+          <Icono nombre="alerta" />
+          {sinCosto} producto{sinCosto === 1 ? '' : 's'} sin costo de compra: la ganancia se ve más alta de lo real.
+          Ponerlos →
+        </Link>
+      )}
 
       <section className="seccion">
         <div className="seccion-cabeza">

@@ -14,6 +14,8 @@ import { NuevoApartado } from './pages/NuevoApartado'
 import { Ventas } from './pages/Ventas'
 import { Ajustes } from './pages/Ajustes'
 import { Catalogo } from './pages/Catalogo'
+import { Importar } from './pages/Importar'
+import { Costos } from './pages/Costos'
 
 function AppPrivada() {
   const { session, cargando, autorizado, salir } = useSesion()
@@ -26,6 +28,8 @@ function AppPrivada() {
       <Route element={<Layout />}>
         <Route index element={<Resumen />} />
         <Route path="productos" element={<Productos />} />
+        <Route path="productos/costos" element={<Costos />} />
+        <Route path="productos/importar" element={<Importar />} />
         <Route path="productos/nuevo" element={<ProductoForm key="nuevo" />} />
         <Route path="productos/:id" element={<ProductoForm />} />
         <Route path="vender" element={<Vender />} />

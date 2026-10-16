@@ -1435,3 +1435,115 @@ textarea:focus {
     gap: 6px;
   }
 }
+
+/* ---------- Importar ---------- */
+.pasos {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.area-pegar {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 14px;
+  white-space: pre;
+}
+.subir-csv {
+  align-self: flex-start;
+}
+.lista-importar {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: 70vh;
+  overflow-y: auto;
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+}
+.lista-importar li {
+  display: flex;
+  gap: 10px;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--borde);
+}
+.lista-importar li:last-child {
+  border-bottom: 0;
+}
+.lista-importar li.excluida .importar-campos {
+  opacity: 0.4;
+}
+.importar-check input {
+  width: 22px;
+  height: 22px;
+  min-height: 22px;
+  margin-top: 11px;
+  accent-color: var(--acento);
+}
+.importar-campos {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.importar-campos input {
+  min-height: 40px;
+  padding: 8px 10px;
+}
+.importar-fila {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr 56px;
+  gap: 6px;
+}
+.importar-fila input[aria-label='Cantidad'] {
+  text-align: center;
+}
+.importar-precios {
+  grid-template-columns: 1fr 1fr;
+}
+.importar-precios label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.importar-precios .campo-pesos input {
+  border: 0;
+}
+
+/* ---------- Costos ---------- */
+.lista-costos {
+  list-style: none;
+  margin: 0;
+  padding: 4px 12px;
+  gap: 0;
+}
+.lista-costos li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--borde);
+}
+.lista-costos li:last-child {
+  border-bottom: 0;
+}
+.costo-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.costo-nombre {
+  color: var(--texto);
+  font-weight: 600;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.costo-campo {
+  width: 130px;
+  flex: none;
+}

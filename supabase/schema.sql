@@ -236,6 +236,31 @@ begin
 end;
 $$;
 
+-- Si una prenda se vendió antes de tener costo (costo 0) y luego se le pone,
+-- se corrige el costo de esas ventas para que la ganancia quede bien.
+create or replace function public.completar_costo_ventas()
+returns trigger
+language plpgsql
+set search_path = public
+as $$
+begin
+  if old.costo = 0 and new.costo > 0 then
+    update public.venta_items
+       set costo_unit = new.costo
+     where producto_id = new.id and costo_unit = 0;
+    update public.ventas v
+       set costo_total = (select coalesce(sum(i.cantidad * i.costo_unit), 0)
+                          from public.venta_items i where i.venta_id = v.id)
+     where v.id in (select venta_id from public.venta_items where producto_id = new.id);
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists productos_costo on public.productos;
+create trigger productos_costo after update of costo on public.productos
+  for each row execute function public.completar_costo_ventas();
+
 drop trigger if exists productos_updated on public.productos;
 create trigger productos_updated before update on public.productos
   for each row execute function public.tocar_updated_at();
