@@ -273,7 +273,12 @@ textarea:focus {
 .titulo-pagina h1 {
   flex: 1;
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+}
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.4rem;
+  }
 }
 .acciones {
   display: flex;
@@ -2618,4 +2623,12 @@ body.modo-catalogo .avisos {
   .nav-superior a span {
     display: none;
   }
+}
+
+.alerta-accion {
+  justify-content: space-between;
+}
+.alerta-accion span {
+  flex: 1;
+  min-width: 160px;
 }

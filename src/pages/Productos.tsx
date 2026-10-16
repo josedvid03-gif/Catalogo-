@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { supabase, datos } from '../lib/supabase'
+import { supabase, datos, mensajeError } from '../lib/supabase'
+import { useAvisar } from '../lib/aviso'
 import { useCarga } from '../lib/hooks'
 import { useAjustes } from '../lib/sesion'
 import { cop } from '../lib/format'
 import type { ItemInventario, Producto } from '../lib/types'
-import { CajaError, Cargando, Foto, Vacio } from '../components/Comunes'
+import { BotonAccion, CajaError, Cargando, Foto, Vacio } from '../components/Comunes'
 import { Icono } from '../components/Icono'
 
 interface Fila extends Producto {
@@ -70,6 +71,28 @@ export function Productos() {
 
   const sinCosto = (carga.data ?? []).filter((p) => p.activo && p.costo === 0).length
   const sinFoto = (carga.data ?? []).filter((p) => p.activo && p.fotos.length === 0).length
+  // Prendas con foto y con unidades disponibles que todavía no se ven en el catálogo.
+  const ocultasConFoto = (carga.data ?? []).filter(
+    (p) => p.activo && !p.publicado && p.fotos.length > 0 && p.disponible > 0,
+  )
+  const avisar = useAvisar()
+  const publicarConFoto = async () => {
+    try {
+      datos(
+        await supabase
+          .from('productos')
+          .update({ publicado: true })
+          .in(
+            'id',
+            ocultasConFoto.map((p) => p.id),
+          ),
+      )
+      avisar(`${ocultasConFoto.length} prenda${ocultasConFoto.length === 1 ? '' : 's'} publicada${ocultasConFoto.length === 1 ? '' : 's'} en el catálogo`)
+      await carga.recargar()
+    } catch (e) {
+      avisar(mensajeError(e), 'error')
+    }
+  }
 
   return (
     <div className="pagina">
@@ -121,6 +144,19 @@ export function Productos() {
           </label>
         </div>
       </div>
+
+      {ocultasConFoto.length > 0 && (
+        <div className="alerta-linea alerta-info alerta-accion">
+          <Icono nombre="ojo" />
+          <span>
+            {ocultasConFoto.length} prenda{ocultasConFoto.length === 1 ? '' : 's'} con foto no se ve
+            {ocultasConFoto.length === 1 ? '' : 'n'} en el catálogo
+          </span>
+          <BotonAccion className="btn btn-sm btn-primario" onClick={publicarConFoto}>
+            Publicar
+          </BotonAccion>
+        </div>
+      )}
 
       {sinFoto > 0 && (
         <Link to="/productos/fotos" className="alerta-linea alerta-info">

@@ -157,6 +157,11 @@ export function ProductoForm() {
 
   const elegirFotos = async (archivos: FileList | null) => {
     if (!archivos?.length) return
+    // Al ponerle la primera foto, la prenda pasa a mostrarse en el catálogo.
+    if (fotos.length === 0 && !publicado) {
+      setPublicado(true)
+      avisar('Se mostrará en el catálogo cuando guardes')
+    }
     const lista = [...archivos]
     setSubiendo((n) => n + lista.length)
     for (const archivo of lista) {
