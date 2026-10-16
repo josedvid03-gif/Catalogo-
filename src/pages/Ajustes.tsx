@@ -4,6 +4,7 @@ import { subirFoto } from '../lib/imagenes'
 import { useCarga } from '../lib/hooks'
 import { useAvisar } from '../lib/aviso'
 import { useAjustes, useSesion } from '../lib/sesion'
+import { ocultarNombre } from '../lib/format'
 import { BotonAccion, CajaError } from '../components/Comunes'
 import { Icono } from '../components/Icono'
 import { AsesoresAjustes } from '../components/AsesoresAjustes'
@@ -42,7 +43,7 @@ export function Ajustes() {
     }
     const pagos = {
       pago_nequi: form.pago_nequi?.trim() || null,
-      pago_titular: form.pago_titular?.trim() || null,
+      pago_titular: ocultarNombre(form.pago_titular ?? '') || null,
       pago_qr: form.pago_qr || null,
       pago_otros: form.pago_otros?.trim() || null,
     }
@@ -59,6 +60,7 @@ export function Ajustes() {
         if (!r.error) avisar('Para guardar los textos del catálogo falta la actualización 02 de la base de datos', 'error')
       }
       datos(r)
+      setForm((f) => ({ ...f, pago_titular: pagos.pago_titular }))
       await recargarAjustes()
       avisar('Ajustes guardados')
     } catch (e) {
@@ -207,6 +209,11 @@ export function Ajustes() {
               value={form.pago_titular ?? ''}
               onChange={(e) => setForm({ ...form, pago_titular: e.target.value })}
             />
+            {form.pago_titular?.trim() && (
+              <small className="sutil">
+                Por seguridad se guarda y se muestra oculto: <strong>{ocultarNombre(form.pago_titular)}</strong>
+              </small>
+            )}
           </label>
         </div>
         <div className="campo">

@@ -87,3 +87,16 @@ export function ordenTalla(t: string): number {
   const n = Number(t)
   return Number.isFinite(n) && t.trim() !== '' ? 100 + n : 1000
 }
+
+/**
+ * Oculta el nombre del titular de Nequi para el catálogo ("Juan García" → "Ju…… Gar……"),
+ * igual que lo muestra Nequi al pagar. Si ya viene oculto, lo deja igual.
+ */
+export function ocultarNombre(nombre: string): string {
+  const n = nombre.trim().replace(/\s+/g, ' ')
+  if (!n || /[.*…]/.test(n)) return n
+  return n
+    .split(' ')
+    .map((p, i) => (p.length <= 2 ? p : p.slice(0, i === 0 ? 2 : 3) + '……'))
+    .join(' ')
+}

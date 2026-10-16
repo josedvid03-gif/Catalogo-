@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, Outlet, useMatch } from 'react-router-dom'
 import { urlFoto } from '../../lib/supabase'
-import { cop, enlaceWhatsapp, ordenTalla } from '../../lib/format'
+import { cop, enlaceWhatsapp, ocultarNombre, ordenTalla } from '../../lib/format'
 import { CajaError, Cantidad, Cargando, Hoja } from '../../components/Comunes'
 import { Icono } from '../../components/Icono'
 import { useAvisar } from '../../lib/aviso'
@@ -346,7 +346,7 @@ function Pedido() {
                   <div className="cat-nequi-datos">
                     <span className="cat-nequi-marca">Nequi</span>
                     <strong className="cat-nequi-numero">{pago.nequi}</strong>
-                    {pago.titular && <span className="sutil">A nombre de {pago.titular}</span>}
+                    {pago.titular && <span className="sutil">A nombre de {ocultarNombre(pago.titular)}</span>}
                   </div>
                   <button
                     type="button"
