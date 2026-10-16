@@ -8,11 +8,13 @@ import { Carrito, itemsParaRPC, totalCarrito } from '../components/Carrito'
 import { BotonAccion, CajaError, Total, Vacio } from '../components/Comunes'
 import { SelectorMetodo } from '../components/MetodoPago'
 import { Icono } from '../components/Icono'
+import { SelectorCliente, clienteVacio } from '../components/SelectorCliente'
+import { vincularCliente } from '../lib/clientes'
 
 export function Vender() {
   const avisar = useAvisar()
   const [lineas, setLineas] = useState<LineaCarrito[]>([])
-  const [cliente, setCliente] = useState('')
+  const [cliente, setCliente] = useState(clienteVacio())
   const [metodo, setMetodo] = useState<MetodoPago>('efectivo')
   const [nota, setNota] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -28,11 +30,18 @@ export function Vender() {
       const id = datos(
         await supabase.rpc('registrar_venta', {
           p_items: itemsParaRPC(lineas),
-          p_cliente: cliente,
+          p_cliente: cliente.nombre,
           p_metodo: metodo,
           p_nota: nota,
         }),
       ) as string
+      // Guardar el cliente para su historial (si falla, la venta igual queda registrada).
+      try {
+        const clienteId = await vincularCliente(cliente)
+        if (clienteId) await supabase.from('ventas').update({ cliente_id: clienteId }).eq('id', id)
+      } catch {
+        /* sin tabla de clientes todavía */
+      }
       const venta = datos(await supabase.from('ventas').select('numero, total').eq('id', id).single()) as {
         numero: number
         total: number
@@ -40,7 +49,7 @@ export function Vender() {
       setUltima(venta)
       avisar(`Venta #${venta.numero} registrada`)
       setLineas([])
-      setCliente('')
+      setCliente(clienteVacio())
       setNota('')
       setMetodo('efectivo')
       setReinicio((n) => n + 1)
@@ -85,10 +94,7 @@ export function Vender() {
             <span>Método de pago</span>
             <SelectorMetodo valor={metodo} onChange={setMetodo} />
           </div>
-          <label className="campo">
-            <span>Cliente (opcional)</span>
-            <input value={cliente} onChange={(e) => setCliente(e.target.value)} />
-          </label>
+          <SelectorCliente valor={cliente} onChange={setCliente} />
           <label className="campo">
             <span>Nota (opcional)</span>
             <input value={nota} onChange={(e) => setNota(e.target.value)} />

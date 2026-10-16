@@ -21,6 +21,8 @@ const AJUSTES_POR_DEFECTO: Ajustes = {
   porcentaje_anticipo: 30,
   dias_apartado: 30,
   stock_minimo: 1,
+  eslogan: 'Original Supply · Colombia',
+  info_catalogo: null,
 }
 
 export function ProveedorSesion({ children }: { children: ReactNode }) {

@@ -18,6 +18,8 @@ export interface Producto {
   publicado: boolean
   activo: boolean
   created_at: string
+  marca: string | null
+  precio_antes: number | null
 }
 
 export interface Variante {
@@ -53,6 +55,8 @@ export interface Ajustes {
   porcentaje_anticipo: number
   dias_apartado: number
   stock_minimo: number
+  eslogan: string | null
+  info_catalogo: string | null
 }
 
 export interface LineaItem {
@@ -122,3 +126,15 @@ export const CATEGORIAS_GASTO = [
   'Comisiones',
   'Otros',
 ]
+
+export interface Cliente {
+  id: string
+  nombre: string
+  telefono: string | null
+  instagram: string | null
+  tallas: string | null
+  intereses: string | null
+  notas: string | null
+  avisar: boolean
+  created_at: string
+}

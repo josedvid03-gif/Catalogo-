@@ -3,7 +3,7 @@ import { configurado } from './lib/supabase'
 import { ProveedorSesion, useSesion } from './lib/sesion'
 import { ProveedorAvisos } from './lib/aviso'
 import { Cargando } from './components/Comunes'
-import { Layout } from './components/Layout'
+import { Layout, Mas } from './components/Layout'
 import { Login, NoAutorizado, SinConfigurar } from './pages/Login'
 import { Resumen } from './pages/Resumen'
 import { Productos } from './pages/Productos'
@@ -13,7 +13,11 @@ import { Apartados } from './pages/Apartados'
 import { NuevoApartado } from './pages/NuevoApartado'
 import { Ventas } from './pages/Ventas'
 import { Ajustes } from './pages/Ajustes'
-import { Catalogo } from './pages/Catalogo'
+import { Catalogo, MarcoCatalogo } from './pages/catalogo/Catalogo'
+import { PrendaPublica } from './pages/catalogo/Prenda'
+import { Clientes, ClienteDetalle } from './pages/Clientes'
+import { Reportes } from './pages/Reportes'
+import { Exportar } from './pages/Exportar'
 import { Importar } from './pages/Importar'
 import { Costos } from './pages/Costos'
 import { Inversores } from './pages/Inversores'
@@ -47,6 +51,11 @@ function AppPrivada() {
         <Route path="inversores/nueva" element={<InversionForm key="nueva" />} />
         <Route path="inversores/:id" element={<InversionDetalle />} />
         <Route path="inversores/:id/editar" element={<InversionForm />} />
+        <Route path="clientes" element={<Clientes />} />
+        <Route path="clientes/:id" element={<ClienteDetalle />} />
+        <Route path="reportes" element={<Reportes />} />
+        <Route path="exportar" element={<Exportar />} />
+        <Route path="mas" element={<Mas />} />
         <Route path="ajustes" element={<Ajustes />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
@@ -60,7 +69,10 @@ export function App() {
     <BrowserRouter>
       <ProveedorAvisos>
         <Routes>
-          <Route path="/catalogo" element={<Catalogo />} />
+          <Route path="/catalogo" element={<MarcoCatalogo />}>
+            <Route index element={<Catalogo />} />
+            <Route path="p/:id" element={<PrendaPublica />} />
+          </Route>
           <Route
             path="/*"
             element={

@@ -179,7 +179,11 @@ export function Resumen() {
             etiqueta="Ganancia neta"
             valor={cop(ganancia - (gastosMes.data ?? 0))}
             tono={ganancia - (gastosMes.data ?? 0) >= 0 ? 'bien' : 'mal'}
-            nota={ingresos ? `${Math.round(((ganancia - (gastosMes.data ?? 0)) / ingresos) * 100)}% de lo vendido` : undefined}
+            nota={
+              ingresos && ganancia - (gastosMes.data ?? 0) > 0
+                ? `${Math.round(((ganancia - (gastosMes.data ?? 0)) / ingresos) * 100)}% de lo vendido`
+                : 'Ventas − costo − gastos'
+            }
           />
         </div>
         <Link to="/caja" className="enlace">

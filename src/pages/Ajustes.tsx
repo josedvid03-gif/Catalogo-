@@ -26,20 +26,26 @@ export function Ajustes() {
   const urlCatalogo = `${window.location.origin}/catalogo`
 
   const guardar = async () => {
+    const basicos = {
+      nombre_tienda: form.nombre_tienda.trim() || 'Mi Tienda',
+      whatsapp: form.whatsapp?.trim() || null,
+      instagram: form.instagram?.trim().replace(/^@/, '') || null,
+      porcentaje_anticipo: form.porcentaje_anticipo,
+      dias_apartado: form.dias_apartado,
+      stock_minimo: form.stock_minimo,
+    }
+    const catalogo = {
+      eslogan: form.eslogan?.trim() || null,
+      info_catalogo: form.info_catalogo?.trim() || null,
+    }
     try {
-      datos(
-        await supabase
-          .from('ajustes')
-          .update({
-            nombre_tienda: form.nombre_tienda.trim() || 'Mi Tienda',
-            whatsapp: form.whatsapp?.trim() || null,
-            instagram: form.instagram?.trim().replace(/^@/, '') || null,
-            porcentaje_anticipo: form.porcentaje_anticipo,
-            dias_apartado: form.dias_apartado,
-            stock_minimo: form.stock_minimo,
-          })
-          .eq('id', 1),
-      )
+      let r = await supabase.from('ajustes').update({ ...basicos, ...catalogo }).eq('id', 1)
+      // Si aún no se ejecutó la actualización 02, se guardan solo los datos básicos.
+      if (r.error && (r.error.code === 'PGRST204' || r.error.code === '42703')) {
+        r = await supabase.from('ajustes').update(basicos).eq('id', 1)
+        if (!r.error) avisar('Para guardar los textos del catálogo falta la actualización 02 de la base de datos', 'error')
+      }
+      datos(r)
       await recargarAjustes()
       avisar('Ajustes guardados')
     } catch (e) {
@@ -129,6 +135,23 @@ export function Ajustes() {
         <label className="campo">
           <span>Instagram (sin @)</span>
           <input value={form.instagram ?? ''} onChange={(e) => setForm({ ...form, instagram: e.target.value })} />
+        </label>
+        <label className="campo">
+          <span>Frase bajo el nombre (catálogo)</span>
+          <input
+            value={form.eslogan ?? ''}
+            placeholder="Original Supply · Colombia"
+            onChange={(e) => setForm({ ...form, eslogan: e.target.value })}
+          />
+        </label>
+        <label className="campo">
+          <span>Información para clientes (envíos, pagos, cambios)</span>
+          <textarea
+            rows={3}
+            value={form.info_catalogo ?? ''}
+            placeholder={'Ej: Envíos a toda Colombia 🇨🇴\nPagos por Nequi, Daviplata o transferencia\nCambios hasta 8 días después'}
+            onChange={(e) => setForm({ ...form, info_catalogo: e.target.value })}
+          />
         </label>
       </section>
 

@@ -23,6 +23,7 @@ export function Productos() {
   const ajustes = useAjustes()
   const [busqueda, setBusqueda] = useState('')
   const [categoria, setCategoria] = useState('')
+  const [marca, setMarca] = useState('')
   const [archivados, setArchivados] = useState(false)
   const [soloSinFoto, setSoloSinFoto] = useState(false)
 
@@ -50,6 +51,11 @@ export function Productos() {
     [carga.data],
   )
 
+  const marcas = useMemo(
+    () => [...new Set((carga.data ?? []).map((p) => p.marca).filter(Boolean) as string[])].sort(),
+    [carga.data],
+  )
+
   const visibles = useMemo(() => {
     const q = normalizar(busqueda.trim())
     return (carga.data ?? []).filter(
@@ -57,9 +63,10 @@ export function Productos() {
         p.activo !== archivados &&
         (!soloSinFoto || p.fotos.length === 0) &&
         (!categoria || p.categoria === categoria) &&
-        (!q || normalizar(`${p.nombre} ${p.categoria ?? ''} ${p.descripcion ?? ''}`).includes(q)),
+        (!marca || p.marca === marca) &&
+        (!q || normalizar(`${p.nombre} ${p.categoria ?? ''} ${p.marca ?? ''} ${p.descripcion ?? ''}`).includes(q)),
     )
-  }, [carga.data, busqueda, categoria, archivados, soloSinFoto])
+  }, [carga.data, busqueda, categoria, marca, archivados, soloSinFoto])
 
   const sinCosto = (carga.data ?? []).filter((p) => p.activo && p.costo === 0).length
   const sinFoto = (carga.data ?? []).filter((p) => p.activo && p.fotos.length === 0).length
@@ -96,6 +103,14 @@ export function Productos() {
               <option key={c}>{c}</option>
             ))}
           </select>
+          {marcas.length > 0 && (
+            <select value={marca} onChange={(e) => setMarca(e.target.value)} aria-label="Marca">
+              <option value="">Todas las marcas</option>
+              {marcas.map((c) => (
+                <option key={c}>{c}</option>
+              ))}
+            </select>
+          )}
           <label className="interruptor">
             <input type="checkbox" checked={soloSinFoto} onChange={(e) => setSoloSinFoto(e.target.checked)} />
             <span>Sin foto</span>
@@ -142,7 +157,13 @@ export function Productos() {
             <Foto ruta={p.fotos[0]} alt={p.nombre} className="foto-producto" />
             <div className="tarjeta-producto-info">
               <strong className="nombre-producto">{p.nombre}</strong>
-              <span className="precio">{cop(p.precio)}</span>
+              {p.marca && <span className="sutil marca-producto">{p.marca}</span>}
+              <span className="precio">
+                {cop(p.precio)}
+                {p.precio_antes && p.precio_antes > p.precio ? (
+                  <s className="precio-antes"> {cop(p.precio_antes)}</s>
+                ) : null}
+              </span>
               <span className="sutil">
                 {p.disponible} disponible{p.disponible === 1 ? '' : 's'}
                 {p.reservado > 0 && ` · ${p.reservado} apartado${p.reservado === 1 ? '' : 's'}`}
@@ -152,6 +173,9 @@ export function Productos() {
                   <span className="etiqueta etiqueta-mal">Agotado</span>
                 ) : p.disponible <= ajustes.stock_minimo ? (
                   <span className="etiqueta etiqueta-aviso">Poco stock</span>
+                ) : null}
+                {p.precio_antes && p.precio_antes > p.precio ? (
+                  <span className="etiqueta etiqueta-rebaja">-{Math.round((1 - p.precio / p.precio_antes) * 100)}%</span>
                 ) : null}
                 {!p.publicado && <span className="etiqueta">Oculto en catálogo</span>}
               </div>

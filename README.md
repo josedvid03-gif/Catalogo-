@@ -38,8 +38,22 @@ Se instala en la pantalla de inicio como una app y todos los dispositivos ven lo
 - **Fotos rápidas**: recorre las prendas sin foto una por una; tomas la foto con el celular, se guarda sola
   y pasa a la siguiente. También hay un filtro "Sin foto" en Productos.
 - **Historial** de cada producto: entradas, ventas, ajustes y anulaciones, con quién lo hizo.
-- **Catálogo público** (`/catalogo`) para compartir por WhatsApp o Instagram. Muestra fotos, precios y tallas
-  disponibles, con un botón para pedir por WhatsApp. **Nunca muestra costos ni ganancias.**
+- **Catálogo público profesional** (`/catalogo`), con los colores y el logo de la marca:
+  - Portada, filtros por categoría, marca y **talla**, búsqueda y orden por precio o rebajas.
+  - Etiquetas **NUEVO** y **-30%** (precio anterior tachado).
+  - Página propia para cada prenda (`/catalogo/p/…`) con galería, tallas, **Compartir** (envía la foto)
+    y **Agregar al pedido**.
+  - **Pedido:** el cliente arma su bolsa y te llega **un solo WhatsApp** con la lista, tallas y total.
+  - **Nunca muestra costos ni ganancias.**
+- **Clientes**: se guardan solos al vender o apartar con su celular. Ficha con historial de compras,
+  tallas y gustos; la app sugiere qué prendas ofrecerle y arma el mensaje de WhatsApp. En cada producto
+  aparece **"Avisar a clientes"** con quienes usan esa talla.
+- **Marcas y rebajas**: la marca se detecta sola por el nombre (Nike, Dickies, Columbia…) y cada prenda
+  puede tener un *precio antes* para mostrarla en rebaja.
+- **Reportes**: gráfica de ventas y ganancia neta por mes, marcas y categorías que más se venden y
+  cuántos días tardan en venderse.
+- **Exportar a Excel**: un archivo con todo (inventario, ventas, apartados, gastos, clientes,
+  inversores…) para tener copia de seguridad.
 - **Equipo**: solo los correos autorizados pueden entrar (ej. 3 usuarios).
 - Precios en pesos colombianos y fechas con la hora de Colombia.
 
@@ -113,6 +127,7 @@ en Supabase abre **SQL Editor → New query**, pega el archivo indicado y presio
 | Archivo | Para qué |
 |---|---|
 | [`supabase/actualizaciones/01-gastos-y-caja.sql`](supabase/actualizaciones/01-gastos-y-caja.sql) | Gastos y cierre de caja |
+| [`supabase/actualizaciones/02-marcas-clientes-catalogo.sql`](supabase/actualizaciones/02-marcas-clientes-catalogo.sql) | Marcas, rebajas, clientes y catálogo profesional |
 
 Si instalas desde cero, basta con `supabase/schema.sql` (ya incluye todo).
 
@@ -132,6 +147,9 @@ Si instalas desde cero, basta con `supabase/schema.sql` (ya incluye todo).
 | Registrar un gasto | **Caja** (ícono 👛 arriba) → **Gastos** → **+ Gasto** |
 | Cerrar caja del día | **Caja** → **Cierre del día** → base y efectivo contado → *Guardar cierre* |
 | Poner fotos a muchas prendas | **Productos** → aviso *"sin foto · Fotos rápidas"* |
+| Ver clientes / avisar novedades | **Más → Clientes** → la persona → *Le puede interesar* |
+| Poner una prenda en rebaja | **Productos** → la prenda → *Precio antes* |
+| Copia de seguridad | **Más → Exportar a Excel** (una vez por semana) |
 | Producto nuevo | **Productos → Nuevo** → fotos, datos, tallas → *Crear producto* |
 | Corregir una venta | **Ventas** → toca la venta → *Anular venta* |
 | Compartir el catálogo | **Ajustes → Catálogo para clientes → Compartir** |
@@ -144,7 +162,7 @@ El *disponible* es lo que se puede vender ya (stock menos apartados).
 - El plan gratuito de Supabase pausa el proyecto si pasa una semana sin uso. Si pasa, entra a
   supabase.com y presiona *Restore*.
 - Las fotos se comprimen automáticamente antes de subirse (≈100–300 KB cada una).
-- Para respaldo: en Supabase, **Table Editor** → cualquier tabla → *Export to CSV*.
+- Para respaldo: **Más → Exportar a Excel** descarga todo en un archivo.
 
 ## Para desarrolladores
 

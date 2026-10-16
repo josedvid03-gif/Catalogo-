@@ -8,6 +8,7 @@ import { cop, fechaHora, margen, ordenTalla, varianteTexto } from '../lib/format
 import type { ItemInventario, Producto } from '../lib/types'
 import { BotonAccion, CajaError, CampoPesos, Cargando } from '../components/Comunes'
 import { Icono } from '../components/Icono'
+import { ClientesInteresados } from './Clientes'
 
 interface FilaVariante {
   clave: string
@@ -55,6 +56,8 @@ export function ProductoForm() {
   const [descripcion, setDescripcion] = useState('')
   const [costo, setCosto] = useState(0)
   const [precio, setPrecio] = useState(0)
+  const [precioAntes, setPrecioAntes] = useState(0)
+  const [marca, setMarca] = useState('')
   const [publicado, setPublicado] = useState(true)
   const [activo, setActivo] = useState(true)
   const [fotos, setFotos] = useState<string[]>([])
@@ -67,9 +70,13 @@ export function ProductoForm() {
   const [error, setError] = useState<string | null>(null)
   const archivoRef = useRef<HTMLInputElement>(null)
 
-  const categorias = useCarga(async () => {
-    const filas = datos(await supabase.from('productos').select('categoria')) as { categoria: string | null }[]
-    return [...new Set(filas.map((f) => f.categoria).filter(Boolean) as string[])].sort()
+  const listas = useCarga(async () => {
+    const filas = datos(await supabase.from('productos').select('categoria, marca')) as {
+      categoria: string | null
+      marca: string | null
+    }[]
+    const unicos = (xs: (string | null)[]) => [...new Set(xs.filter(Boolean) as string[])].sort()
+    return { categorias: unicos(filas.map((f) => f.categoria)), marcas: unicos(filas.map((f) => f.marca)) }
   })
 
   const carga = useCarga(async () => {
@@ -101,6 +108,8 @@ export function ProductoForm() {
     setDescripcion(p.descripcion ?? '')
     setCosto(p.costo)
     setPrecio(p.precio)
+    setPrecioAntes(p.precio_antes ?? 0)
+    setMarca(p.marca ?? '')
     setPublicado(p.publicado)
     setActivo(p.activo)
     setFotos(p.fotos)
@@ -184,6 +193,8 @@ export function ProductoForm() {
         id,
         nombre: nombre.trim(),
         categoria: categoria.trim() || null,
+        marca: marca.trim() || null,
+        precio_antes: precioAntes > precio ? precioAntes : null,
         descripcion: descripcion.trim() || null,
         costo,
         precio,
@@ -191,8 +202,17 @@ export function ProductoForm() {
         activo,
         fotos,
       }
-      if (esNuevo) datos(await supabase.from('productos').insert(fila))
-      else datos(await supabase.from('productos').update(fila).eq('id', id))
+      const guardarFila = (f: Record<string, unknown>) =>
+        esNuevo ? supabase.from('productos').insert(f) : supabase.from('productos').update(f).eq('id', id)
+      let r = await guardarFila(fila)
+      // Sin la actualización 02 de la base de datos no existen marca ni precio antes.
+      if (r.error?.code === 'PGRST204') {
+        const { marca: _m, precio_antes: _p, ...basica } = fila
+        void _m
+        void _p
+        r = await guardarFila(basica)
+      }
+      datos(r)
 
       for (const v of borradas) {
         datos(await supabase.from('variantes').delete().eq('id', v.id!))
@@ -305,7 +325,21 @@ export function ProductoForm() {
             placeholder="Ej: Blusas, Jeans, Vestidos"
           />
           <datalist id="categorias">
-            {(categorias.data ?? []).map((c) => (
+            {(listas.data?.categorias ?? []).map((c) => (
+              <option key={c} value={c} />
+            ))}
+          </datalist>
+        </label>
+        <label className="campo">
+          <span>Marca</span>
+          <input
+            list="marcas"
+            value={marca}
+            onChange={(e) => setMarca(e.target.value)}
+            placeholder={esNuevo ? 'Se detecta sola por el nombre (Nike, Dickies…)' : 'Ej: Nike, Dickies, Columbia'}
+          />
+          <datalist id="marcas">
+            {(listas.data?.marcas ?? []).map((c) => (
               <option key={c} value={c} />
             ))}
           </datalist>
@@ -327,6 +361,17 @@ export function ProductoForm() {
         {precio > 0 && (
           <p className={`nota-margen ${ganancia < 0 ? 'tono-mal' : ''}`}>
             Ganas {cop(ganancia)} por prenda{pct !== null && ` (${pct}% de margen)`}
+          </p>
+        )}
+        <label className="campo">
+          <span>Precio antes (para mostrar rebaja, opcional)</span>
+          <CampoPesos valor={precioAntes} onChange={setPrecioAntes} placeholder="Sin rebaja" />
+        </label>
+        {precioAntes > 0 && precio > 0 && (
+          <p className={precioAntes > precio ? 'nota-margen' : 'texto-error'}>
+            {precioAntes > precio
+              ? `En el catálogo sale tachado ${cop(precioAntes)} → ${cop(precio)} (-${Math.round((1 - precio / precioAntes) * 100)}%)`
+              : 'El precio antes debe ser mayor que el precio de venta'}
           </p>
         )}
         <label className="interruptor">
@@ -409,6 +454,15 @@ export function ProductoForm() {
 
       {!esNuevo && carga.data && (
         <>
+          <ClientesInteresados
+            productoId={id}
+            nombre={nombre}
+            precio={precio}
+            marca={marca}
+            categoria={categoria}
+            tallas={carga.data.items.filter((i) => i.disponible > 0).map((i) => i.talla)}
+          />
+
           <section className="tarjeta">
             <h2>Historial de inventario</h2>
             {carga.data.movimientos.length === 0 ? (

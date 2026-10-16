@@ -9,6 +9,8 @@ import { Carrito, itemsParaRPC, totalCarrito } from '../components/Carrito'
 import { BotonAccion, CajaError, CampoPesos, Total, Vacio } from '../components/Comunes'
 import { SelectorMetodo } from '../components/MetodoPago'
 import { Icono } from '../components/Icono'
+import { SelectorCliente, clienteVacio } from '../components/SelectorCliente'
+import { vincularCliente } from '../lib/clientes'
 
 export function anticipoSugerido(total: number, porcentaje: number) {
   return Math.min(total, Math.ceil((total * porcentaje) / 100 / 1000) * 1000)
@@ -32,8 +34,7 @@ export function NuevoApartado() {
   const avisar = useAvisar()
   const ajustes = useAjustes()
   const [lineas, setLineas] = useState<LineaCarrito[]>([])
-  const [cliente, setCliente] = useState('')
-  const [telefono, setTelefono] = useState('')
+  const [cliente, setCliente] = useState(clienteVacio())
   const [anticipoManual, setAnticipoManual] = useState<number | null>(null)
   const [metodo, setMetodo] = useState<MetodoPago>('efectivo')
   const [nota, setNota] = useState('')
@@ -48,25 +49,30 @@ export function NuevoApartado() {
 
   const crear = async () => {
     setError(null)
-    if (!cliente.trim()) return setError('Escribe el nombre del cliente')
+    if (!cliente.nombre.trim()) return setError('Escribe el nombre del cliente')
     if (anticipo > total) return setError('El anticipo no puede ser mayor al total')
     try {
       const id = datos(
         await supabase.rpc('crear_apartado', {
           p_items: itemsParaRPC(lineas),
-          p_cliente: cliente,
-          p_telefono: telefono,
+          p_cliente: cliente.nombre,
+          p_telefono: cliente.telefono,
           p_anticipo: anticipo,
           p_metodo: metodo,
           p_nota: nota,
         }),
       ) as string
+      try {
+        const clienteId = await vincularCliente(cliente)
+        if (clienteId) await supabase.from('apartados').update({ cliente_id: clienteId }).eq('id', id)
+      } catch {
+        /* sin tabla de clientes todavía */
+      }
       const a = datos(await supabase.from('apartados').select('*, apartado_items(*)').eq('id', id).single()) as Apartado
       setCreado(a)
       avisar(`Apartado #${a.numero} creado`)
       setLineas([])
-      setCliente('')
-      setTelefono('')
+      setCliente(clienteVacio())
       setNota('')
       setAnticipoManual(null)
       setReinicio((n) => n + 1)
@@ -118,20 +124,7 @@ export function NuevoApartado() {
       ) : (
         <section className="tarjeta">
           <Total etiqueta="Total de las prendas" valor={total} fuerte />
-          <label className="campo">
-            <span>Cliente *</span>
-            <input value={cliente} onChange={(e) => setCliente(e.target.value)} autoComplete="off" />
-          </label>
-          <label className="campo">
-            <span>Celular (para WhatsApp)</span>
-            <input
-              type="tel"
-              inputMode="tel"
-              value={telefono}
-              onChange={(e) => setTelefono(e.target.value)}
-              placeholder="300 123 4567"
-            />
-          </label>
+          <SelectorCliente valor={cliente} onChange={setCliente} requerido />
           <label className="campo">
             <span>
               Anticipo{' '}
