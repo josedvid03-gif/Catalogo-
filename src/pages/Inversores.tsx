@@ -74,7 +74,7 @@ export function Inversores() {
       <section className="tarjeta">
         <h2>{nombreMes(mes)}: ¿cuánto te queda?</h2>
         <div className="fila-total">
-          <span>Ganancia de las ventas</span>
+          <span>Ganancia neta (ventas − costo − gastos)</span>
           <span>{cop(gananciaMes)}</span>
         </div>
         <div className="fila-total">
@@ -86,8 +86,8 @@ export function Inversores() {
           <span>{cop(gananciaMes - delMes)}</span>
         </div>
         <p className="sutil">
-          Ganancia = ventas − costo de la ropa vendida. No incluye otros gastos (arriendo, servicios…). Si faltan
-          costos de compra, la ganancia se ve más alta.
+          Los gastos (arriendo, transporte…) se registran en <Link to="/caja">Caja → Gastos</Link>. Si faltan costos
+          de compra o gastos, la ganancia se ve más alta de lo real.
         </p>
       </section>
 

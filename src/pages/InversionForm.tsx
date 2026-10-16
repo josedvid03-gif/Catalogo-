@@ -45,7 +45,7 @@ export function InversionForm() {
     return datos(
       await supabase.from('inversiones').select('*, inversores(nombre, telefono)').eq('id', id).single(),
     ) as Omit<Inversion, 'pagos_inversion'>
-  }, [id])
+  }, [id], { alVolver: false })
 
   useEffect(() => {
     const e = existente.data
@@ -253,8 +253,8 @@ export function InversionForm() {
           ) : (
             <>
               <p>
-                Cada mes recibe el <strong>{pct(tasa)}</strong> de la ganancia de las ventas (ventas − costo de la ropa
-                vendida), desde el {fecha(inicio)} hasta el {fecha(fin)}.
+                Cada mes recibe el <strong>{pct(tasa)}</strong> de la ganancia neta del negocio (ventas − costo de la
+                ropa vendida − gastos), desde el {fecha(inicio)} hasta el {fecha(fin)}.
               </p>
               <div className="fila-total">
                 <span>Si la ganancia de un mes es {cop(1_000_000)}</span>

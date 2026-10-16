@@ -42,6 +42,12 @@ export function Resumen() {
         .lt('fecha', hasta),
     ) as VentaMes[]
   }, [mes])
+  const gastosMes = useCarga(async () => {
+    const siguiente = moverMes(mes, 1)
+    const r = await supabase.from('gastos').select('monto').gte('fecha', `${mes}-01`).lt('fecha', `${siguiente}-01`)
+    // Si la tabla aún no existe (falta la actualización), se muestra $0.
+    return r.error ? 0 : (r.data as { monto: number }[]).reduce((s, g) => s + g.monto, 0)
+  }, [mes])
   const apartados = useCarga(
     async () =>
       datos(
@@ -160,13 +166,25 @@ export function Resumen() {
         <div className="datos">
           <Dato etiqueta="Vendido" valor={cop(ingresos)} nota={`${vs.length} venta${vs.length === 1 ? '' : 's'}`} />
           <Dato
-            etiqueta="Ganancia"
+            etiqueta="Ventas − costo de la ropa"
             valor={cop(ganancia)}
-            tono={ganancia >= 0 ? 'bien' : 'mal'}
-            nota={ingresos ? `${Math.round((ganancia / ingresos) * 100)}% de margen` : undefined}
+            nota={`Costo de lo vendido ${cop(costoVendido)}`}
           />
-          <Dato etiqueta="Costo de lo vendido" valor={cop(costoVendido)} />
+          <Link to="/caja?ver=gastos" className="dato dato-enlace">
+            <div className="dato-etiqueta">Gastos</div>
+            <div className="dato-valor">{cop(gastosMes.data ?? 0)}</div>
+            <div className="dato-nota">Arriendo, transporte… · Ver →</div>
+          </Link>
+          <Dato
+            etiqueta="Ganancia neta"
+            valor={cop(ganancia - (gastosMes.data ?? 0))}
+            tono={ganancia - (gastosMes.data ?? 0) >= 0 ? 'bien' : 'mal'}
+            nota={ingresos ? `${Math.round(((ganancia - (gastosMes.data ?? 0)) / ingresos) * 100)}% de lo vendido` : undefined}
+          />
         </div>
+        <Link to="/caja" className="enlace">
+          Cierre de caja de hoy →
+        </Link>
         {porMetodo.length > 0 && (
           <div className="chips-info">
             {porMetodo.map((m) => (

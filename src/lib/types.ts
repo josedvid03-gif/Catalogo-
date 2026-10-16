@@ -101,3 +101,24 @@ export interface LineaCarrito {
   cantidad: number
   precio: number
 }
+
+export interface Gasto {
+  id: string
+  fecha: string // AAAA-MM-DD
+  categoria: string
+  descripcion: string | null
+  monto: number
+  metodo_pago: MetodoPago
+  creado_por: string | null
+}
+
+export const CATEGORIAS_GASTO = [
+  'Arriendo',
+  'Servicios',
+  'Transporte',
+  'Publicidad',
+  'Empaques',
+  'Sueldos',
+  'Comisiones',
+  'Otros',
+]

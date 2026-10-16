@@ -4,8 +4,14 @@ import { mensajeError } from './supabase'
 /**
  * Carga datos y los vuelve a pedir cuando la app vuelve a primer plano,
  * así lo que cambió en otro dispositivo aparece al regresar.
+ * En formularios se pasa `alVolver: false` para no pisar lo que se está
+ * escribiendo (por ejemplo al volver de la cámara del celular).
  */
-export function useCarga<T>(cargar: () => Promise<T>, deps: unknown[] = []) {
+export function useCarga<T>(
+  cargar: () => Promise<T>,
+  deps: unknown[] = [],
+  { alVolver = true }: { alVolver?: boolean } = {},
+) {
   const [data, setData] = useState<T | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [cargando, setCargando] = useState(true)
@@ -35,12 +41,13 @@ export function useCarga<T>(cargar: () => Promise<T>, deps: unknown[] = []) {
   }, deps)
 
   useEffect(() => {
-    const alVolver = () => {
+    if (!alVolver) return
+    const volver = () => {
       if (document.visibilityState === 'visible') void recargar()
     }
-    document.addEventListener('visibilitychange', alVolver)
-    return () => document.removeEventListener('visibilitychange', alVolver)
-  }, [recargar])
+    document.addEventListener('visibilitychange', volver)
+    return () => document.removeEventListener('visibilitychange', volver)
+  }, [recargar, alVolver])
 
   return { data, error, cargando, recargar }
 }

@@ -32,6 +32,11 @@ Se instala en la pantalla de inicio como una app y todos los dispositivos ven lo
   (mensual, total y efectiva anual), pagos vencidos y cuánto te queda del mes después de pagar a los
   inversores. Cada pago se registra (se aceptan abonos parciales) y puedes enviarle al inversor su
   extracto por WhatsApp. Solo tú y tu equipo ven esta sección.
+- **Caja y gastos**: registra arriendo, transporte, publicidad, bolsas, sueldos… y ve la **ganancia neta**
+  del mes (ventas − costo de la ropa − gastos). El **cierre del día** muestra lo que entró y salió por método
+  de pago (efectivo, transferencia, tarjeta), cuenta el efectivo contra la base y dice si sobra o falta.
+- **Fotos rápidas**: recorre las prendas sin foto una por una; tomas la foto con el celular, se guarda sola
+  y pasa a la siguiente. También hay un filtro "Sin foto" en Productos.
 - **Historial** de cada producto: entradas, ventas, ajustes y anulaciones, con quién lo hizo.
 - **Catálogo público** (`/catalogo`) para compartir por WhatsApp o Instagram. Muestra fotos, precios y tallas
   disponibles, con un botón para pedir por WhatsApp. **Nunca muestra costos ni ganancias.**
@@ -99,6 +104,18 @@ Vercel publica la rama principal (`main`). Cada cambio que se suba a GitHub se p
 - **Android (Chrome):** abre la dirección → menú ⋮ → *Agregar a la pantalla principal* / *Instalar app*.
 - **iPhone (Safari):** abre la dirección → botón compartir → *Agregar a inicio*.
 
+## Actualizaciones de la base de datos
+
+Algunas mejoras necesitan tablas nuevas. Si la app dice *"Falta actualizar la base de datos"*,
+en Supabase abre **SQL Editor → New query**, pega el archivo indicado y presiona **Run**
+(se puede ejecutar varias veces sin perder datos):
+
+| Archivo | Para qué |
+|---|---|
+| [`supabase/actualizaciones/01-gastos-y-caja.sql`](supabase/actualizaciones/01-gastos-y-caja.sql) | Gastos y cierre de caja |
+
+Si instalas desde cero, basta con `supabase/schema.sql` (ya incluye todo).
+
 ## Uso diario
 
 | Quiero… | Dónde |
@@ -112,6 +129,9 @@ Vercel publica la rama principal (`main`). Cada cambio que se suba a GitHub se p
 | Poner costos de compra | **Productos → Costos de compra** (aparece el aviso si faltan) |
 | Registrar un inversor | **Inversores** (ícono 📈 arriba) → **Nueva** |
 | Pagarle a un inversor | **Inversores** → el inversor → *Pagar* en el cronograma |
+| Registrar un gasto | **Caja** (ícono 👛 arriba) → **Gastos** → **+ Gasto** |
+| Cerrar caja del día | **Caja** → **Cierre del día** → base y efectivo contado → *Guardar cierre* |
+| Poner fotos a muchas prendas | **Productos** → aviso *"sin foto · Fotos rápidas"* |
 | Producto nuevo | **Productos → Nuevo** → fotos, datos, tallas → *Crear producto* |
 | Corregir una venta | **Ventas** → toca la venta → *Anular venta* |
 | Compartir el catálogo | **Ajustes → Catálogo para clientes → Compartir** |

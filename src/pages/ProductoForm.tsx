@@ -89,7 +89,7 @@ export function ProductoForm() {
       items: datos(inv) as ItemInventario[],
       movimientos: datos(movs) as unknown as Movimiento[],
     }
-  }, [id])
+  }, [id], { alVolver: false })
 
   // Cargar datos al editar (y cada vez que se recargan).
   const cargado = carga.data

@@ -8,17 +8,16 @@ export interface DatosInversiones {
 
 const SELECT = '*, inversores(nombre, telefono), pagos_inversion(*)'
 
-/** Ganancia de ventas por día desde una fecha (AAAA-MM-DD). */
+/** Ganancia neta (ventas − costo − gastos) por día desde una fecha (AAAA-MM-DD). */
 async function cargarGanancias(desde: string | null): Promise<GananciaPorDia> {
   if (!desde) return new Map()
-  const ventas = datos(
-    await supabase
-      .from('ventas')
-      .select('fecha, total, costo_total')
-      .eq('anulada', false)
-      .gte('fecha', `${desde}T00:00:00-05:00`),
-  ) as { fecha: string; total: number; costo_total: number }[]
-  return gananciaPorDia(ventas)
+  const [ventas, gastos] = await Promise.all([
+    supabase.from('ventas').select('fecha, total, costo_total').eq('anulada', false).gte('fecha', `${desde}T00:00:00-05:00`),
+    supabase.from('gastos').select('fecha, monto').gte('fecha', desde),
+  ])
+  // Si la tabla de gastos aún no existe (falta la actualización), se calcula sin gastos.
+  const listaGastos = gastos.error ? [] : (gastos.data as { fecha: string; monto: number }[])
+  return gananciaPorDia(datos(ventas) as { fecha: string; total: number; costo_total: number }[], listaGastos)
 }
 
 export async function cargarInversiones(desdeMes?: string): Promise<DatosInversiones> {

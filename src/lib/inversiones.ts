@@ -92,13 +92,20 @@ export function fechaColombia(iso: string): string {
   return new Date(iso).toLocaleDateString('en-CA', { timeZone: 'America/Bogota' })
 }
 
-/** Agrupa ventas (no anuladas) por día en hora de Colombia. */
-export function gananciaPorDia(ventas: { fecha: string; total: number; costo_total: number }[]): GananciaPorDia {
+/**
+ * Ganancia neta por día en hora de Colombia:
+ * ventas (no anuladas) − costo de la ropa vendida − gastos del negocio.
+ */
+export function gananciaPorDia(
+  ventas: { fecha: string; total: number; costo_total: number }[],
+  gastos: { fecha: string; monto: number }[] = [],
+): GananciaPorDia {
   const m: GananciaPorDia = new Map()
   for (const v of ventas) {
     const d = fechaColombia(v.fecha)
     m.set(d, (m.get(d) ?? 0) + v.total - v.costo_total)
   }
+  for (const g of gastos) m.set(g.fecha, (m.get(g.fecha) ?? 0) - g.monto)
   return m
 }
 

@@ -27,6 +27,10 @@ export function Layout() {
             </NavLink>
           ))}
         </nav>
+        <NavLink to="/caja" className="btn-icono enlace-ajustes" aria-label="Caja">
+          <Icono nombre="billetera" />
+          <span className="solo-escritorio">Caja</span>
+        </NavLink>
         <NavLink to="/inversores" className="btn-icono enlace-ajustes" aria-label="Inversores">
           <Icono nombre="inversores" />
           <span className="solo-escritorio">Inversores</span>

@@ -713,6 +713,31 @@ create table if not exists public.pagos_inversion (
 create index if not exists pagos_inversion_idx on public.pagos_inversion(inversion_id);
 
 -- ---------------------------------------------------------------------
+--  Gastos del negocio (arriendo, transporte, publicidad…) y cierres de caja
+-- ---------------------------------------------------------------------
+create table if not exists public.gastos (
+  id          uuid primary key default gen_random_uuid(),
+  fecha       date not null default public.hoy_colombia(),
+  categoria   text not null default 'Otros',
+  descripcion text,
+  monto       integer not null check (monto > 0),
+  metodo_pago text not null default 'efectivo'
+              check (metodo_pago in ('efectivo', 'transferencia', 'tarjeta', 'otro')),
+  creado_por  text default (auth.jwt() ->> 'email'),
+  created_at  timestamptz not null default now()
+);
+create index if not exists gastos_fecha_idx on public.gastos(fecha);
+
+create table if not exists public.cierres_caja (
+  fecha      date primary key,
+  base       integer not null default 0 check (base >= 0),     -- efectivo con el que se abrió
+  contado    integer check (contado >= 0),                      -- efectivo contado al cerrar
+  nota       text,
+  creado_por text default (auth.jwt() ->> 'email'),
+  updated_at timestamptz not null default now()
+);
+
+-- ---------------------------------------------------------------------
 --  Seguridad: solo el equipo puede leer/escribir. El público solo ve
 --  el catálogo y las fotos.
 -- ---------------------------------------------------------------------
@@ -728,6 +753,8 @@ alter table public.movimientos    enable row level security;
 alter table public.inversores      enable row level security;
 alter table public.inversiones     enable row level security;
 alter table public.pagos_inversion enable row level security;
+alter table public.gastos          enable row level security;
+alter table public.cierres_caja    enable row level security;
 
 do $$
 declare
@@ -735,7 +762,8 @@ declare
 begin
   foreach t in array array['equipo', 'ajustes', 'productos', 'variantes', 'ventas',
                            'venta_items', 'apartados', 'apartado_items', 'movimientos',
-                           'inversores', 'inversiones', 'pagos_inversion']
+                           'inversores', 'inversiones', 'pagos_inversion',
+                           'gastos', 'cierres_caja']
   loop
     execute format('drop policy if exists "solo equipo" on public.%I', t);
     execute format(

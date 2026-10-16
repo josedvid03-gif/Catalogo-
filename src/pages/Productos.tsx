@@ -24,6 +24,7 @@ export function Productos() {
   const [busqueda, setBusqueda] = useState('')
   const [categoria, setCategoria] = useState('')
   const [archivados, setArchivados] = useState(false)
+  const [soloSinFoto, setSoloSinFoto] = useState(false)
 
   const carga = useCarga(async () => {
     const [productos, inv] = await Promise.all([
@@ -54,12 +55,14 @@ export function Productos() {
     return (carga.data ?? []).filter(
       (p) =>
         p.activo !== archivados &&
+        (!soloSinFoto || p.fotos.length === 0) &&
         (!categoria || p.categoria === categoria) &&
         (!q || normalizar(`${p.nombre} ${p.categoria ?? ''} ${p.descripcion ?? ''}`).includes(q)),
     )
-  }, [carga.data, busqueda, categoria, archivados])
+  }, [carga.data, busqueda, categoria, archivados, soloSinFoto])
 
   const sinCosto = (carga.data ?? []).filter((p) => p.activo && p.costo === 0).length
+  const sinFoto = (carga.data ?? []).filter((p) => p.activo && p.fotos.length === 0).length
 
   return (
     <div className="pagina">
@@ -94,11 +97,22 @@ export function Productos() {
             ))}
           </select>
           <label className="interruptor">
+            <input type="checkbox" checked={soloSinFoto} onChange={(e) => setSoloSinFoto(e.target.checked)} />
+            <span>Sin foto</span>
+          </label>
+          <label className="interruptor">
             <input type="checkbox" checked={archivados} onChange={(e) => setArchivados(e.target.checked)} />
             <span>Archivados</span>
           </label>
         </div>
       </div>
+
+      {sinFoto > 0 && (
+        <Link to="/productos/fotos" className="alerta-linea alerta-info">
+          <Icono nombre="camara" />
+          {sinFoto} producto{sinFoto === 1 ? '' : 's'} sin foto · Fotos rápidas
+        </Link>
+      )}
 
       {sinCosto > 0 && (
         <Link to="/productos/costos" className="alerta-linea">

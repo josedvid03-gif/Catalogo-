@@ -199,7 +199,7 @@ export function InversionDetalle() {
         <h2>Cronograma de pagos</h2>
         {inv.tipo === 'ganancias' && (
           <p className="sutil">
-            Cada periodo se paga cuando termina. La ganancia es ventas − costo de la ropa vendida en ese periodo.
+            Cada periodo se paga cuando termina. La ganancia es ventas − costo de la ropa vendida − gastos del negocio en ese periodo.
           </p>
         )}
         <ul className="cronograma">
