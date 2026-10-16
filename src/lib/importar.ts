@@ -114,6 +114,24 @@ export interface Columnas {
   cantidad: number // -1 = no hay
 }
 
+const ENCABEZADOS: { campo: keyof Columnas; patron: RegExp }[] = [
+  { campo: 'costo', patron: /compra|costo|coste|inversi/i },
+  { campo: 'precio', patron: /venta|precio|pvp|valor/i },
+  { campo: 'cantidad', patron: /cant|stock|unid|existencia/i },
+  { campo: 'nombre', patron: /nombre|producto|prenda|ropa|descripci|art[ií]culo|referencia|disponible/i },
+]
+
+/** Si la primera fila son títulos (Ropa, Compra, Venta…), dice qué columna es cada cosa. */
+function columnasPorEncabezado(fila: string[]): Partial<Columnas> {
+  const r: Partial<Columnas> = {}
+  fila.forEach((celda, i) => {
+    if (!celda || leerPesos(celda) !== null) return
+    const e = ENCABEZADOS.find((x) => x.patron.test(celda) && r[x.campo] === undefined)
+    if (e) r[e.campo] = i
+  })
+  return r
+}
+
 /** Adivina qué columna es el nombre (más texto) y cuál el precio (más números). */
 export function adivinarColumnas(tabla: string[][]): Columnas {
   const ancho = Math.max(0, ...tabla.map((f) => f.length))
@@ -137,15 +155,17 @@ export function adivinarColumnas(tabla: string[][]): Columnas {
   }
   const nombre = Math.max(0, mejor(textos))
   const precio = mejor(numeros, [nombre])
-  return { nombre, precio, costo: -1, cantidad: -1 }
+  const porTitulo = tabla.length > 1 ? columnasPorEncabezado(tabla[0]) : {}
+  return { nombre, precio, costo: -1, cantidad: -1, ...porTitulo }
 }
 
-/** ¿La primera fila parece un encabezado (Nombre, Precio…) y no un producto? */
+/** ¿La primera fila parece un encabezado (Ropa, Compra, Venta…) y no un producto? */
 export function tieneEncabezado(tabla: string[][], cols: Columnas): boolean {
   const f = tabla[0]
-  if (!f) return false
-  const precio = cols.precio >= 0 ? leerPesos(f[cols.precio] ?? '') : null
-  return precio === null && /nombre|producto|prenda|descripci|art[ií]culo|precio/i.test(f.join(' '))
+  if (!f || tabla.length < 2) return false
+  const precioPrimera = cols.precio >= 0 ? leerPesos(f[cols.precio] ?? '') : null
+  const otrasConPrecio = cols.precio >= 0 && tabla.slice(1).some((x) => leerPesos(x[cols.precio] ?? '') !== null)
+  return precioPrimera === null && (otrasConPrecio || Object.keys(columnasPorEncabezado(f)).length > 0)
 }
 
 export function convertirFilas(
