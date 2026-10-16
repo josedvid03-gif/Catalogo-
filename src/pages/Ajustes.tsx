@@ -6,6 +6,7 @@ import { useAvisar } from '../lib/aviso'
 import { useAjustes, useSesion } from '../lib/sesion'
 import { BotonAccion, CajaError } from '../components/Comunes'
 import { Icono } from '../components/Icono'
+import { AsesoresAjustes } from '../components/AsesoresAjustes'
 
 export function Ajustes() {
   const avisar = useAvisar()
@@ -276,6 +277,8 @@ export function Ajustes() {
           Guardar ajustes
         </BotonAccion>
       </section>
+
+      <AsesoresAjustes />
 
       <section className="tarjeta">
         <h2>Equipo</h2>

@@ -10,6 +10,7 @@ import { CajaError, Cargando, Dato, Foto } from '../components/Comunes'
 import { Icono } from '../components/Icono'
 import { cargarInversiones } from '../lib/datosInversiones'
 import { resumirInversion } from '../lib/inversiones'
+import { contarMensajesNuevos } from './Mensajes'
 
 interface VentaMes {
   total: number
@@ -61,6 +62,8 @@ export function Resumen() {
     .filter((i) => i.estado === 'activa')
     .flatMap((i) => resumirInversion(i, hoyColombia(), inversiones.data!.ganancias).vencidas)
   const deudaInversores = pagosInversores.reduce((s, c) => s + c.monto - c.pagado, 0)
+
+  const mensajesNuevos = useCarga(contarMensajesNuevos).data ?? 0
 
   const error = inv.error || ventas.error || apartados.error
   if (error) {
@@ -128,6 +131,13 @@ export function Resumen() {
       </div>
 
       {cargandoTodo && <Cargando />}
+
+      {mensajesNuevos > 0 && (
+        <Link to="/mensajes" className="alerta-linea alerta-info">
+          <Icono nombre="chat" />
+          {mensajesNuevos} mensaje{mensajesNuevos === 1 ? '' : 's'} del catálogo sin atender →
+        </Link>
+      )}
 
       {pagosInversores.length > 0 && (
         <Link to="/inversores" className="alerta-linea">

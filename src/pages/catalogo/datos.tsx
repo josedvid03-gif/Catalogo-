@@ -31,6 +31,27 @@ export interface TiendaCatalogo {
   pago?: { nequi: string | null; titular: string | null; qr: string | null; otros: string | null }
 }
 
+export interface Asesor {
+  id: string
+  nombre: string
+  whatsapp: string
+}
+
+/** Lo que se guarda en "Mensajes del catálogo" cuando el cliente toca WhatsApp. */
+export interface DatosContacto {
+  tipo: 'pedido' | 'pregunta' | 'general'
+  mensaje: string
+  producto_id?: string
+  producto_nombre?: string
+  total?: number
+  cliente_nombre?: string
+  cliente_celular?: string
+  cliente_cedula?: string
+  cliente_ciudad?: string
+  cliente_direccion?: string
+  entrega?: 'envio' | 'recoger'
+}
+
 export interface LineaPedido {
   varianteId: string
   productoId: string
@@ -56,10 +77,33 @@ interface Ctx {
   maximo: (varianteId: string) => number
   pedidoAbierto: boolean
   setPedidoAbierto: (v: boolean) => void
+  asesor: Asesor | null
+  registrar: (d: DatosContacto) => void
 }
 
 const Contexto = createContext<Ctx | null>(null)
 const CLAVE = 'pedido-catalogo-v1'
+const CLAVE_ASESOR = 'asesor-catalogo-v1'
+
+/** A cada cliente le toca un asesor al azar y siempre le escribe al mismo. */
+function elegirAsesor(lista: Asesor[]): Asesor | null {
+  if (!lista.length) return null
+  let guardado: string | null = null
+  try {
+    guardado = localStorage.getItem(CLAVE_ASESOR)
+  } catch {
+    /* sin almacenamiento */
+  }
+  const ya = lista.find((a) => a.id === guardado)
+  if (ya) return ya
+  const nuevo = lista[Math.floor(Math.random() * lista.length)]
+  try {
+    localStorage.setItem(CLAVE_ASESOR, nuevo.id)
+  } catch {
+    /* sin almacenamiento */
+  }
+  return nuevo
+}
 
 function leerPedido(): LineaPedido[] {
   try {
@@ -75,9 +119,13 @@ export function ProveedorCatalogo({ children }: { children: ReactNode }) {
     const r = datos(await supabase.rpc('catalogo_publico')) as {
       tienda: TiendaCatalogo
       productos: PrendaCatalogo[]
+      asesores?: Asesor[]
     }
+    const asesor = elegirAsesor(r.asesores ?? [])
     return {
-      tienda: r.tienda,
+      asesor,
+      // Todos los botones de WhatsApp del catálogo usan el número del asesor asignado.
+      tienda: { ...r.tienda, whatsapp: asesor?.whatsapp ?? r.tienda.whatsapp },
       prendas: r.productos.map((p) => ({
         ...p,
         // Compatibilidad con la versión anterior de la base de datos (sin id ni cantidad por talla).
@@ -144,6 +192,18 @@ export function ProveedorCatalogo({ children }: { children: ReactNode }) {
     [],
   )
 
+  const asesor = carga.data?.asesor ?? null
+  const registrar = useCallback(
+    (d: DatosContacto) => {
+      // Si falla (p. ej. falta la actualización 04), el cliente igual llega a WhatsApp.
+      void supabase.rpc('registrar_contacto', { p: { ...d, asesor_id: asesor?.id ?? null } }).then(
+        () => undefined,
+        () => undefined,
+      )
+    },
+    [asesor],
+  )
+
   const valor: Ctx = {
     tienda: carga.data?.tienda ?? null,
     prendas: carga.data?.prendas ?? [],
@@ -159,6 +219,8 @@ export function ProveedorCatalogo({ children }: { children: ReactNode }) {
     maximo,
     pedidoAbierto,
     setPedidoAbierto,
+    asesor,
+    registrar,
   }
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>
 }

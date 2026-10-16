@@ -31,7 +31,7 @@ export function MarcoCatalogo() {
 }
 
 function MarcoInterno() {
-  const { tienda, pedido, setPedidoAbierto, prendas } = useCatalogo()
+  const { tienda, pedido, setPedidoAbierto, prendas, registrar } = useCatalogo()
   const enPrenda = useMatch('/catalogo/p/:id')
   const prendaActual = enPrenda ? prendas.find((p) => p.id === enPrenda.params.id) : undefined
   const mensajeFlotante = prendaActual
@@ -73,6 +73,14 @@ function MarcoInterno() {
         <a
           className={`cat-wa-flotante ${unidades > 0 ? 'elevado' : ''}`}
           href={enlaceWhatsapp(tienda.whatsapp, mensajeFlotante)}
+          onClick={() =>
+            registrar({
+              tipo: prendaActual ? 'pregunta' : 'general',
+              mensaje: mensajeFlotante,
+              producto_id: prendaActual?.id,
+              producto_nombre: prendaActual?.nombre,
+            })
+          }
           target="_blank"
           rel="noreferrer"
           aria-label="Escríbenos por WhatsApp"
@@ -87,7 +95,7 @@ function MarcoInterno() {
 }
 
 function PieCatalogo() {
-  const { tienda } = useCatalogo()
+  const { tienda, registrar } = useCatalogo()
   if (!tienda) return null
   return (
     <footer className="cat-pie">
@@ -100,6 +108,7 @@ function PieCatalogo() {
         {tienda.whatsapp && (
           <a
             href={enlaceWhatsapp(tienda.whatsapp, `Hola ${tienda.nombre} 👋`)}
+            onClick={() => registrar({ tipo: 'general', mensaje: `Hola ${tienda.nombre} 👋` })}
             target="_blank"
             rel="noreferrer"
             className="cat-btn cat-btn-claro"
@@ -153,7 +162,8 @@ function leerDatos(): DatosEnvio {
 
 function Pedido() {
   const avisar = useAvisar()
-  const { tienda, pedido, cambiarCantidad, quitar, vaciar, maximo, pedidoAbierto, setPedidoAbierto } = useCatalogo()
+  const { tienda, pedido, cambiarCantidad, quitar, vaciar, maximo, pedidoAbierto, setPedidoAbierto, asesor, registrar } =
+    useCatalogo()
   const [d, setD] = useState<DatosEnvio>(leerDatos)
   const [verQr, setVerQr] = useState(false)
   const [intento, setIntento] = useState(false)
@@ -214,7 +224,19 @@ function Pedido() {
       return
     }
     if (!tienda?.whatsapp) return
-    window.open(enlaceWhatsapp(tienda.whatsapp, mensaje()), '_blank', 'noopener')
+    const texto = mensaje()
+    registrar({
+      tipo: 'pedido',
+      mensaje: texto,
+      total,
+      cliente_nombre: d.nombre.trim(),
+      cliente_celular: d.celular.trim(),
+      cliente_cedula: d.cedula.trim() || undefined,
+      cliente_ciudad: envio ? d.ciudad.trim() : undefined,
+      cliente_direccion: envio ? [d.direccion.trim(), d.barrio.trim()].filter(Boolean).join(' · ') : undefined,
+      entrega: d.entrega,
+    })
+    window.open(enlaceWhatsapp(tienda.whatsapp, texto), '_blank', 'noopener')
   }
 
   const copiar = async (texto: string, que: string) => {
@@ -347,6 +369,7 @@ function Pedido() {
             </section>
           )}
 
+          {asesor && <p className="cat-asesor">Te atiende: <strong>{asesor.nombre}</strong></p>}
           {tienda?.whatsapp ? (
             <button type="button" className="cat-btn cat-btn-oscuro cat-btn-bloque" onClick={enviar}>
               <Icono nombre="chat" /> Enviar pedido por WhatsApp
@@ -371,7 +394,7 @@ function Pedido() {
 type Orden = 'recientes' | 'menor' | 'mayor' | 'rebajas'
 
 export function Catalogo() {
-  const { tienda, prendas, cargando, error, recargar } = useCatalogo()
+  const { tienda, prendas, cargando, error, recargar, registrar } = useCatalogo()
   const [busqueda, setBusqueda] = useState('')
   const [categoria, setCategoria] = useState('')
   const [marca, setMarca] = useState('')
@@ -420,6 +443,9 @@ export function Catalogo() {
           {tienda?.whatsapp && (
             <a
               href={enlaceWhatsapp(tienda.whatsapp, `Hola ${tienda.nombre} 👋 vi su catálogo y quisiera más información.`)}
+              onClick={() =>
+                registrar({ tipo: 'general', mensaje: `Hola ${tienda.nombre} 👋 vi su catálogo y quisiera más información.` })
+              }
               target="_blank"
               rel="noreferrer"
               className="cat-btn cat-btn-claro"

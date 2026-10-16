@@ -2774,3 +2774,63 @@ body.modo-catalogo .avisos {
 .cat-pago-otros {
   white-space: pre-line;
 }
+
+.cat-asesor {
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.lista-equipo li.inactivo strong {
+  color: var(--texto-2);
+}
+.interruptor-sm {
+  min-height: 36px;
+  font-size: 0.85rem;
+  gap: 6px;
+}
+
+/* ---------- Mensajes ---------- */
+.nav-icono {
+  position: relative;
+  display: inline-flex;
+}
+.insignia {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--mal);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+}
+.mensaje-nuevo {
+  border-color: var(--aviso);
+}
+.mensaje-cliente {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--superficie-2);
+}
+.mensaje-texto summary {
+  cursor: pointer;
+  color: var(--texto-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.mensaje-texto p {
+  margin-top: 6px;
+  white-space: pre-line;
+  font-size: 0.9rem;
+}
+.mensaje-nota {
+  min-height: 40px;
+  font-size: 0.9rem;
+}

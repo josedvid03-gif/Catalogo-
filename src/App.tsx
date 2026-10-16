@@ -18,6 +18,7 @@ import { PrendaPublica } from './pages/catalogo/Prenda'
 import { Clientes, ClienteDetalle } from './pages/Clientes'
 import { Reportes } from './pages/Reportes'
 import { Exportar } from './pages/Exportar'
+import { Mensajes } from './pages/Mensajes'
 import { Importar } from './pages/Importar'
 import { Costos } from './pages/Costos'
 import { Inversores } from './pages/Inversores'
@@ -56,6 +57,7 @@ function AppPrivada() {
         <Route path="reportes" element={<Reportes />} />
         <Route path="exportar" element={<Exportar />} />
         <Route path="mas" element={<Mas />} />
+        <Route path="mensajes" element={<Mensajes />} />
         <Route path="ajustes" element={<Ajustes />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

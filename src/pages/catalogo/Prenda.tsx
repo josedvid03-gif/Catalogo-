@@ -31,7 +31,7 @@ function useArchivoFoto(p: PrendaCatalogo | undefined) {
 export function PrendaPublica() {
   const { id } = useParams()
   const avisar = useAvisar()
-  const { prendas, tienda, cargando, agregar, setPedidoAbierto, pedido } = useCatalogo()
+  const { prendas, tienda, cargando, agregar, setPedidoAbierto, pedido, registrar } = useCatalogo()
   const p = prendas.find((x) => x.id === id)
   const [varianteId, setVarianteId] = useState<string | null>(null)
   const [foto, setFoto] = useState(0)
@@ -85,6 +85,11 @@ export function PrendaPublica() {
   const textoCompartir = `${p.nombre}${p.marca && !p.nombre.toLowerCase().includes(p.marca.toLowerCase()) ? ` (${p.marca})` : ''} — ${cop(p.precio)}${
     d ? ` (antes ${cop(p.precio_antes!)})` : ''
   }`
+
+  const mensajePregunta = (pregunta: string) =>
+    `Hola 👋 ${pregunta}${pregunta.endsWith('?') ? '' : ':'}\n${p.nombre}${
+      elegida ? ` — Talla ${varianteTexto(elegida.talla, elegida.color)}` : ''
+    } — ${cop(p.precio)}\n${urlPrendaPublica(p.id)}`
 
   const compartir = async () => {
     const url = urlPrendaPublica(p.id)
@@ -212,10 +217,8 @@ export function PrendaPublica() {
             {tienda?.whatsapp && (
               <a
                 className="cat-btn cat-btn-contorno-oscuro"
-                href={enlaceWhatsapp(
-                  tienda.whatsapp,
-                  `Hola 👋 Me interesa: ${p.nombre}${elegida ? ` — Talla ${varianteTexto(elegida.talla, elegida.color)}` : ''} — ${cop(p.precio)}\n${urlPrendaPublica(p.id)}`,
-                )}
+                href={enlaceWhatsapp(tienda.whatsapp, mensajePregunta('Me interesa'))}
+                onClick={() => registrar({ tipo: 'pregunta', mensaje: mensajePregunta('Me interesa'), producto_id: p.id, producto_nombre: p.nombre })}
                 target="_blank"
                 rel="noreferrer"
               >
@@ -241,10 +244,10 @@ export function PrendaPublica() {
                   <a
                     key={pregunta}
                     className="cat-pregunta"
-                    href={enlaceWhatsapp(
-                      tienda.whatsapp!,
-                      `Hola 👋 ${pregunta}\n${p.nombre}${elegida ? ` — Talla ${varianteTexto(elegida.talla, elegida.color)}` : ''} — ${cop(p.precio)}\n${urlPrendaPublica(p.id)}`,
-                    )}
+                    href={enlaceWhatsapp(tienda.whatsapp!, mensajePregunta(pregunta))}
+                    onClick={() =>
+                      registrar({ tipo: 'pregunta', mensaje: mensajePregunta(pregunta), producto_id: p.id, producto_nombre: p.nombre })
+                    }
                     target="_blank"
                     rel="noreferrer"
                   >

@@ -1,5 +1,7 @@
 import { NavLink, Outlet, Link, useLocation } from 'react-router-dom'
 import { useAjustes } from '../lib/sesion'
+import { useCarga } from '../lib/hooks'
+import { contarMensajesNuevos } from '../pages/Mensajes'
 import { Icono, type NombreIcono } from './Icono'
 
 interface Seccion {
@@ -19,6 +21,7 @@ const INFERIOR: Seccion[] = [
 
 /** Todo lo que está en "Más". */
 export const SECCIONES_MAS: (Seccion & { detalle: string })[] = [
+  { a: '/mensajes', nombre: 'Mensajes', icono: 'chat', detalle: 'Lo que llega por WhatsApp desde el catálogo' },
   { a: '/ventas', nombre: 'Ventas', icono: 'ventas', detalle: 'Historial y anulaciones' },
   { a: '/caja', nombre: 'Caja y gastos', icono: 'billetera', detalle: 'Cierre del día y gastos' },
   { a: '/clientes', nombre: 'Clientes', icono: 'clientes', detalle: 'Historial y avisos por talla' },
@@ -42,6 +45,7 @@ export function Layout() {
   const { pathname } = useLocation()
   // "Más" queda marcado también cuando se está en una de sus secciones.
   const enMas = SECCIONES_MAS.some((s) => pathname.startsWith(s.a))
+  const nuevos = useCarga(contarMensajesNuevos, [pathname]).data ?? 0
   return (
     <div className="app">
       <header className="cabecera">
@@ -61,7 +65,10 @@ export function Layout() {
                   : ''
               }
             >
-              <Icono nombre={s.icono} />
+              <span className="nav-icono">
+                <Icono nombre={s.icono} />
+                {s.a === '/mas' && nuevos > 0 && <span className="insignia">{nuevos}</span>}
+              </span>
               <span>{s.nombre}</span>
             </NavLink>
           ))}
@@ -81,7 +88,10 @@ export function Layout() {
             end={s.a === '/'}
             className={({ isActive }) => (isActive || (s.a === '/mas' && enMas) ? 'active' : '')}
           >
-            <Icono nombre={s.icono} tam={22} />
+            <span className="nav-icono">
+              <Icono nombre={s.icono} tam={22} />
+              {s.a === '/mas' && nuevos > 0 && <span className="insignia">{nuevos}</span>}
+            </span>
             <span>{s.nombre}</span>
           </NavLink>
         ))}
@@ -91,6 +101,7 @@ export function Layout() {
 }
 
 export function Mas() {
+  const nuevos = useCarga(contarMensajesNuevos).data ?? 0
   return (
     <div className="pagina">
       <div className="titulo-pagina">
@@ -107,6 +118,7 @@ export function Mas() {
                 <strong>{s.nombre}</strong>
                 <span className="sutil">{s.detalle}</span>
               </span>
+              {s.a === '/mensajes' && nuevos > 0 && <span className="etiqueta etiqueta-aviso">{nuevos} nuevos</span>}
               <Icono nombre="adelante" tam={18} className="sutil" />
             </Link>
           </li>

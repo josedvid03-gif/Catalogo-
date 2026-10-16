@@ -48,6 +48,11 @@ Se instala en la pantalla de inicio como una app y todos los dispositivos ven lo
     y muestra **cómo pagar por Nequi** (número con botón copiar y QR).
   - Botón flotante de **WhatsApp** y **preguntas rápidas** en cada prenda.
   - **Nunca muestra costos ni ganancias.**
+- **Varios WhatsApp (asesores)**: en Ajustes agregas los números de tus asesores; a cada cliente del
+  catálogo le toca uno (siempre el mismo) y ve "Te atiende: …".
+- **Mensajes**: cada vez que un cliente toca un botón de WhatsApp en el catálogo queda registrado
+  (pedido o pregunta, prenda, total, datos de envío y a qué asesor le llegó). Se marcan como atendido,
+  vendido o descartado, con nota, y hay estadísticas por asesor. *La conversación en sí queda en WhatsApp.*
 - **Clientes**: se guardan solos al vender o apartar con su celular. Ficha con historial de compras,
   tallas y gustos; la app sugiere qué prendas ofrecerle y arma el mensaje de WhatsApp. En cada producto
   aparece **"Avisar a clientes"** con quienes usan esa talla.
@@ -132,6 +137,7 @@ en Supabase abre **SQL Editor → New query**, pega el archivo indicado y presio
 | [`supabase/actualizaciones/01-gastos-y-caja.sql`](supabase/actualizaciones/01-gastos-y-caja.sql) | Gastos y cierre de caja |
 | [`supabase/actualizaciones/02-marcas-clientes-catalogo.sql`](supabase/actualizaciones/02-marcas-clientes-catalogo.sql) | Marcas, rebajas, clientes y catálogo profesional |
 | [`supabase/actualizaciones/03-pagos-nequi.sql`](supabase/actualizaciones/03-pagos-nequi.sql) | Nequi como método de pago y datos de pago en el catálogo |
+| [`supabase/actualizaciones/04-asesores-mensajes.sql`](supabase/actualizaciones/04-asesores-mensajes.sql) | Varios WhatsApp (asesores) y bandeja de mensajes del catálogo |
 
 Si instalas desde cero, basta con `supabase/schema.sql` (ya incluye todo).
 
