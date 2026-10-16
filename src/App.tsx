@@ -1,0 +1,61 @@
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { configurado } from './lib/supabase'
+import { ProveedorSesion, useSesion } from './lib/sesion'
+import { ProveedorAvisos } from './lib/aviso'
+import { Cargando } from './components/Comunes'
+import { Layout } from './components/Layout'
+import { Login, NoAutorizado, SinConfigurar } from './pages/Login'
+import { Resumen } from './pages/Resumen'
+import { Productos } from './pages/Productos'
+import { ProductoForm } from './pages/ProductoForm'
+import { Vender } from './pages/Vender'
+import { Apartados } from './pages/Apartados'
+import { NuevoApartado } from './pages/NuevoApartado'
+import { Ventas } from './pages/Ventas'
+import { Ajustes } from './pages/Ajustes'
+import { Catalogo } from './pages/Catalogo'
+
+function AppPrivada() {
+  const { session, cargando, autorizado, salir } = useSesion()
+  if (cargando) return <Cargando />
+  if (!session) return <Login />
+  if (autorizado === null) return <Cargando texto="Verificando acceso…" />
+  if (!autorizado) return <NoAutorizado email={session.user.email ?? ''} salir={salir} />
+  return (
+    <Routes>
+      <Route element={<Layout />}>
+        <Route index element={<Resumen />} />
+        <Route path="productos" element={<Productos />} />
+        <Route path="productos/nuevo" element={<ProductoForm key="nuevo" />} />
+        <Route path="productos/:id" element={<ProductoForm />} />
+        <Route path="vender" element={<Vender />} />
+        <Route path="apartados" element={<Apartados />} />
+        <Route path="apartados/nuevo" element={<NuevoApartado />} />
+        <Route path="ventas" element={<Ventas />} />
+        <Route path="ajustes" element={<Ajustes />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
+  )
+}
+
+export function App() {
+  if (!configurado) return <SinConfigurar />
+  return (
+    <BrowserRouter>
+      <ProveedorAvisos>
+        <Routes>
+          <Route path="/catalogo" element={<Catalogo />} />
+          <Route
+            path="/*"
+            element={
+              <ProveedorSesion>
+                <AppPrivada />
+              </ProveedorSesion>
+            }
+          />
+        </Routes>
+      </ProveedorAvisos>
+    </BrowserRouter>
+  )
+}

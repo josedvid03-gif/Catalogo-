@@ -1,0 +1,117 @@
+# Inventario de la tienda
+
+App web para manejar la tienda de ropa desde el celular, la tablet o el computador.
+Se instala en la pantalla de inicio como una app y todos los dispositivos ven los mismos datos.
+
+## Qué hace
+
+- **Productos** con fotos, categoría, costo, precio de venta, tallas y colores, cada uno con su stock.
+- **Inventario actual**: unidades en tienda, valor a costo, valor a precio de venta y ganancia esperada.
+- **Ventas**: buscas la prenda, ajustas el precio si das descuento y eliges el método de pago
+  (efectivo, transferencia, tarjeta u otro). El stock se descuenta solo. Una venta hecha por error
+  se puede anular y las prendas vuelven al inventario.
+- **Apartados**: el cliente deja un anticipo (30% sugerido, editable) y tiene 30 días para recoger.
+  - Las prendas apartadas se reservan y no se pueden vender a otra persona.
+  - Al recoger, se cobra el saldo y queda registrada la venta.
+  - Si no completa el pago, se cancela, se marca el anticipo como devuelto y la ropa vuelve a estar disponible.
+  - El plazo se puede extender.
+  - Se puede enviar el comprobante al cliente por WhatsApp.
+- **Resumen del mes**: ventas, ganancia, margen, ventas por método de pago, lo más vendido,
+  apartados por vencer y prendas con poco stock.
+- **Historial** de cada producto: entradas, ventas, ajustes y anulaciones, con quién lo hizo.
+- **Catálogo público** (`/catalogo`) para compartir por WhatsApp o Instagram. Muestra fotos, precios y tallas
+  disponibles, con un botón para pedir por WhatsApp. **Nunca muestra costos ni ganancias.**
+- **Equipo**: solo los correos autorizados pueden entrar (ej. 3 usuarios).
+- Precios en pesos colombianos y fechas con la hora de Colombia.
+
+## Puesta en marcha (una sola vez, ~20 minutos)
+
+Necesitas dos cuentas gratuitas: **Supabase** (base de datos y fotos) y **Vercel** (publica la app).
+
+### 1. Crear la base de datos en Supabase
+
+1. Entra a <https://supabase.com>, crea una cuenta y un proyecto nuevo
+   (región recomendada: *South America (São Paulo)*). Guarda la contraseña de la base de datos.
+2. Abre **SQL Editor → New query**.
+3. Copia todo el contenido de [`supabase/schema.sql`](supabase/schema.sql) y pégalo.
+4. Al final del archivo, cambia `tu-correo@ejemplo.com` por **tu correo**.
+5. Presiona **Run**. Debe decir *Success*.
+
+### 2. Crear los usuarios
+
+1. En Supabase ve a **Authentication → Users → Add user → Create new user**.
+2. Escribe el correo y una contraseña y marca **Auto Confirm User**.
+3. Repite para cada persona del equipo.
+4. Para que puedan entrar, agrega también sus correos en la app: **Ajustes → Equipo** (el tuyo ya quedó en el paso 1).
+5. Recomendado: en **Authentication → Sign In / Providers**, desactiva *Allow new users to sign up*
+   para que nadie más pueda crear cuentas.
+
+### 3. Copiar las claves
+
+En Supabase ve a **Project Settings → API** (o *API Keys*) y copia:
+
+- **Project URL**, por ejemplo `https://abcdxyz.supabase.co`
+- **anon public key** (o *Publishable key*)
+
+La clave pública se puede usar en la app sin problema; los permisos los controla la base de datos.
+**Nunca** uses la clave `service_role` / *secret*.
+
+### 4. Publicar la app en Vercel
+
+1. Entra a <https://vercel.com> con tu cuenta de GitHub.
+2. **Add New → Project** e importa este repositorio. Vercel detecta que es Vite.
+3. En **Environment Variables** agrega:
+   - `VITE_SUPABASE_URL` = el Project URL
+   - `VITE_SUPABASE_ANON_KEY` = la clave pública
+4. Presiona **Deploy**. Al terminar te da una dirección como `https://mi-tienda.vercel.app`.
+
+Vercel publica la rama principal (`main`). Cada cambio que se suba a GitHub se publica solo.
+
+### 5. Instalar en el celular
+
+- **Android (Chrome):** abre la dirección → menú ⋮ → *Agregar a la pantalla principal* / *Instalar app*.
+- **iPhone (Safari):** abre la dirección → botón compartir → *Agregar a inicio*.
+
+## Uso diario
+
+| Quiero… | Dónde |
+|---|---|
+| Registrar una venta | **Vender** → busca la prenda → toca para agregar → método de pago → *Registrar venta* |
+| Apartar ropa | **Vender → Apartar** (o **Apartados → Nuevo**) |
+| Entregar un apartado | **Apartados** → *Entregar · cobrar saldo* |
+| Cancelar un apartado | **Apartados** → *Cancelar* (marca si ya devolviste el anticipo) |
+| Llegó mercancía | **Productos** → el producto → sube el stock de la talla → *Guardar cambios* |
+| Producto nuevo | **Productos → Nuevo** → fotos, datos, tallas → *Crear producto* |
+| Corregir una venta | **Ventas** → toca la venta → *Anular venta* |
+| Compartir el catálogo | **Ajustes → Catálogo para clientes → Compartir** |
+
+**Stock vs. disponible:** el *stock* es lo que hay físicamente en la tienda (incluye lo apartado).
+El *disponible* es lo que se puede vender ya (stock menos apartados).
+
+## Notas
+
+- El plan gratuito de Supabase pausa el proyecto si pasa una semana sin uso. Si pasa, entra a
+  supabase.com y presiona *Restore*.
+- Las fotos se comprimen automáticamente antes de subirse (≈100–300 KB cada una).
+- Para respaldo: en Supabase, **Table Editor** → cualquier tabla → *Export to CSV*.
+
+## Para desarrolladores
+
+```bash
+cp .env.example .env   # y llena las dos variables
+npm install
+npm run dev            # http://localhost:5173
+npm run build          # compila en dist/
+```
+
+React + TypeScript + Vite, `@supabase/supabase-js`, PWA con `vite-plugin-pwa`.
+La lógica crítica (ventas, apartados, reservas de stock, anulaciones) está en funciones
+de Postgres en `supabase/schema.sql`, así que es atómica aunque varias personas vendan al mismo tiempo.
+
+```
+supabase/schema.sql   tablas, vista de inventario, funciones, permisos (RLS) y bucket de fotos
+src/lib/              cliente de Supabase, formatos (COP, fechas), sesión, fotos
+src/components/       diseño general, carrito, campos y componentes comunes
+src/pages/            Resumen, Productos, ProductoForm, Vender, Apartados, NuevoApartado,
+                      Ventas, Ajustes, Catalogo (público), Login
+```
