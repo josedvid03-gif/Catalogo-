@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from 'react'
 import { supabase, mensajeError } from '../lib/supabase'
-import { Icono } from '../components/Icono'
 
 export function Login() {
   const [email, setEmail] = useState('')
@@ -26,9 +25,7 @@ export function Login() {
   return (
     <div className="pantalla-centro">
       <form className="tarjeta login" onSubmit={entrar}>
-        <div className="login-logo">
-          <Icono nombre="tienda" tam={32} />
-        </div>
+        <img src="/logo.png" alt="Alma Fuerte" className="login-logo" width="112" height="112" />
         <h1>Inventario de la tienda</h1>
         <label className="campo">
           <span>Correo</span>

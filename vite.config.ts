@@ -8,15 +8,15 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/favicon.svg', 'icons/apple-touch-icon.png'],
+      includeAssets: ['icons/favicon-64.png', 'icons/apple-touch-icon.png', 'logo.png', 'logo-128.png'],
       manifest: {
-        name: 'Mi Tienda — Inventario',
-        short_name: 'Mi Tienda',
+        name: 'Alma Fuerte',
+        short_name: 'Alma Fuerte',
         description: 'Inventario, ventas y apartados de la tienda',
         lang: 'es-CO',
         start_url: '/',
         display: 'standalone',
-        background_color: '#faf7f4',
+        background_color: '#000000',
         theme_color: '#7a3e48',
         icons: [
           { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },

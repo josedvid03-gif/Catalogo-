@@ -47,6 +47,7 @@ export function Catalogo() {
   return (
     <div className="catalogo">
       <header className="catalogo-cabeza">
+        <img src="/logo.png" alt="" className="catalogo-logo" width="132" height="132" />
         <h1>{tienda?.nombre ?? 'Catálogo'}</h1>
         <div className="catalogo-redes">
           {tienda?.whatsapp && (

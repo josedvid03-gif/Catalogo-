@@ -16,7 +16,7 @@ export function Layout() {
     <div className="app">
       <header className="cabecera">
         <Link to="/" className="marca">
-          <Icono nombre="tienda" />
+          <img src="/logo-128.png" alt="" className="marca-logo" width="34" height="34" />
           <span>{ajustes.nombre_tienda}</span>
         </Link>
         <nav className="nav-superior" aria-label="Secciones">
