@@ -3638,11 +3638,11 @@ body.con-barra-compra .cat-wa-flotante {
 
 /* =====================================================================
    Catálogo: acabado premium
-   Líneas finas, esquinas rectas, más aire, precios sobrios y dorado
-   discreto en lugar de rojo. (Va al final para refinar todo lo anterior.)
+   Líneas finas, esquinas rectas, más aire y precios sobrios; el rojo
+   queda solo para rebajas y avisos. (Va al final para refinar todo lo anterior.)
    ===================================================================== */
 .cat {
-  --cat-dorado: #c8a96a;
+  --cat-rojo: #ff6b5e;
   --cat-linea: color-mix(in srgb, var(--texto) 12%, transparent);
   --cat-linea-fuerte: color-mix(in srgb, var(--texto) 32%, transparent);
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -3650,7 +3650,7 @@ body.con-barra-compra .cat-wa-flotante {
 }
 @media (prefers-color-scheme: light) {
   .cat {
-    --cat-dorado: #9a7b3f;
+    --cat-rojo: #b3261e;
   }
 }
 
@@ -3710,7 +3710,7 @@ body.con-barra-compra .cat-wa-flotante {
   font-weight: 500;
   font-size: 0.78rem;
   letter-spacing: 0.04em;
-  color: var(--cat-dorado);
+  color: var(--cat-rojo);
 }
 .cat .cat-etiqueta {
   font-size: 0.7rem;
@@ -3719,7 +3719,7 @@ body.con-barra-compra .cat-wa-flotante {
   color: var(--texto-2);
 }
 .cat .cat-etiqueta em {
-  color: var(--cat-dorado);
+  color: var(--cat-rojo);
   font-weight: 600;
 }
 .cat .cat-etiqueta-fila .enlace {
@@ -3801,7 +3801,7 @@ body.con-barra-compra .cat-wa-flotante {
   height: 56px;
   border: 1px solid var(--cat-linea-fuerte);
   outline: 0;
-  color: var(--cat-dorado);
+  color: var(--texto);
 }
 .cat .cat-sello-circulo svg {
   width: 22px;
@@ -3850,8 +3850,8 @@ body.con-barra-compra .cat-wa-flotante {
   letter-spacing: 0.2em;
 }
 .cat .cat-insignia-rebaja {
-  background: var(--cat-dorado);
-  color: #0d0c0a;
+  background: #b3261e;
+  color: #fff;
 }
 .cat .cat-tallas-mini span {
   border-color: var(--cat-linea);
@@ -3880,7 +3880,7 @@ body.con-barra-compra .cat-wa-flotante {
 .cat .cat-puntaje > span:first-child,
 .cat .cat-opinar-estrellas button.llena,
 .cat .opinion-estrellas {
-  color: var(--cat-dorado);
+  color: #f2a91c;
 }
 .cat .cat-compra-bloque {
   border-color: var(--cat-linea);
@@ -3888,10 +3888,10 @@ body.con-barra-compra .cat-wa-flotante {
   background: transparent;
 }
 .cat .cat-compra-bloque svg {
-  color: var(--cat-dorado);
+  color: var(--texto);
 }
 
-/* Rebajas: negro y dorado en vez de rojo */
+/* Rebajas: franja negra con el título en rojo */
 .cat .cat-banda-rebajas {
   background: #14120e;
   color: var(--cat-crema);
@@ -3901,18 +3901,18 @@ body.con-barra-compra .cat-wa-flotante {
   letter-spacing: 0.04em;
 }
 .cat .cat-banda-titulo {
-  color: #c8a96a;
+  color: #ff6b5e;
   font-weight: 500;
   letter-spacing: 0.3em;
 }
 .cat .cat-nav a.cat-nav-rebajas {
-  color: #c8a96a;
+  color: #ff6b5e;
 }
 .cat .cat-nav a.cat-nav-rebajas.activo {
-  border-bottom-color: #c8a96a;
+  border-bottom-color: #ff6b5e;
 }
 .cat .cat-menu a.cat-nav-rebajas {
-  color: var(--cat-dorado);
+  color: var(--cat-rojo);
 }
 .cat .cat-nav a {
   font-weight: 400;
