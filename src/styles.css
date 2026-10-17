@@ -2952,3 +2952,7 @@ body.modo-catalogo .avisos {
     color: #fff;
   }
 }
+/* En la barra del computador, que la insignia no tape el texto. */
+.nav-superior .nav-icono:has(.insignia) {
+  margin-right: 10px;
+}
