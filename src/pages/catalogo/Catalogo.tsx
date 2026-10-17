@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, Outlet, useMatch } from 'react-router-dom'
+import { Link, Outlet, useLocation, useMatch, useNavigate, useSearchParams } from 'react-router-dom'
 import { urlFoto } from '../../lib/supabase'
 import { cop, enlaceWhatsapp, ocultarNombre, ordenTalla } from '../../lib/format'
 import { CajaError, Cantidad, Cargando, Hoja } from '../../components/Comunes'
@@ -46,6 +46,43 @@ export function MarcoCatalogo() {
 
 function MarcoInterno() {
   const { tienda, pedido, setPedidoAbierto, prendas, registrar } = useCatalogo()
+  const [params] = useSearchParams()
+  const { pathname } = useLocation()
+  const navigate = useNavigate()
+  const [menuAbierto, setMenuAbierto] = useState(false)
+  const [buscando, setBuscando] = useState(false)
+  const categorias = useMemo(
+    () => [...new Set(prendas.map((p) => p.categoria).filter(Boolean) as string[])].sort(),
+    [prendas],
+  )
+  const hayRebajas = prendas.some((p) => descuento(p) > 0)
+  const enInicio = pathname === '/catalogo' && !params.get('c') && !params.has('rebajas')
+  const buscar = (q: string) =>
+    navigate(q.trim() ? `/catalogo?q=${encodeURIComponent(q)}` : '/catalogo', { replace: pathname === '/catalogo' })
+  const enlacesSecciones = (alTocar?: () => void) => (
+    <>
+      <Link
+        to="/catalogo"
+        className={enInicio ? 'activo' : ''}
+        onClick={() => {
+          alTocar?.()
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        }}
+      >
+        Inicio
+      </Link>
+      {categorias.map((c) => (
+        <Link key={c} to={`/catalogo?c=${encodeURIComponent(c)}`} className={params.get('c') === c ? 'activo' : ''} onClick={alTocar}>
+          {c}
+        </Link>
+      ))}
+      {hayRebajas && (
+        <Link to="/catalogo?rebajas" className={`cat-nav-rebajas ${params.has('rebajas') ? 'activo' : ''}`} onClick={alTocar}>
+          Rebajas 🔥
+        </Link>
+      )}
+    </>
+  )
   const enPrenda = useMatch('/catalogo/p/:id')
   const prendaActual = enPrenda ? prendas.find((p) => p.id === enPrenda.params.id) : undefined
   const mensajeFlotante = prendaActual
@@ -63,15 +100,98 @@ function MarcoInterno() {
   return (
     <div className="cat">
       <header className="cat-barra">
-        <Link to="/catalogo" className="cat-barra-marca">
-          <img src="/logo-128.png" alt="" width="36" height="36" />
-          <span>{tienda?.nombre ?? ''}</span>
-        </Link>
-        <button className="cat-bolsa" onClick={() => setPedidoAbierto(true)} aria-label={`Ver pedido (${unidades})`}>
-          <Icono nombre="bolsa" tam={22} />
-          {unidades > 0 && <span className="cat-bolsa-num">{unidades}</span>}
-        </button>
+        <div className="cat-barra-fila">
+          <div className="cat-barra-lado">
+            <button className="cat-icono-barra" onClick={() => setMenuAbierto(true)} aria-label="Menú">
+              <Icono nombre="menu" tam={24} />
+            </button>
+            <button
+              className="cat-icono-barra"
+              onClick={() => setBuscando(!buscando)}
+              aria-label="Buscar"
+              aria-expanded={buscando}
+            >
+              <Icono nombre="buscar" tam={22} />
+            </button>
+          </div>
+          <Link
+            to="/catalogo"
+            className="cat-barra-logo"
+            aria-label={tienda?.nombre ?? 'Inicio'}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
+            <img src="/logo-128.png" alt="" width="46" height="46" />
+            <span>{tienda?.nombre ?? ''}</span>
+          </Link>
+          <div className="cat-barra-lado cat-barra-derecha">
+            <button className="cat-bolsa" onClick={() => setPedidoAbierto(true)} aria-label={`Ver pedido (${unidades})`}>
+              <Icono nombre="bolsa" tam={22} />
+              {unidades > 0 && <span className="cat-bolsa-num">{unidades}</span>}
+            </button>
+          </div>
+        </div>
+        {buscando && (
+          <div className="cat-barra-buscar">
+            <Icono nombre="buscar" tam={18} />
+            <input
+              type="search"
+              autoFocus
+              placeholder="Buscar prenda o marca…"
+              defaultValue={params.get('q') ?? ''}
+              onChange={(e) => buscar(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+              aria-label="Buscar"
+            />
+            <button
+              className="cat-icono-barra"
+              aria-label="Cerrar búsqueda"
+              onClick={() => {
+                setBuscando(false)
+                if (params.get('q')) buscar('')
+              }}
+            >
+              <Icono nombre="cerrar" tam={18} />
+            </button>
+          </div>
+        )}
+        {(categorias.length > 0 || hayRebajas) && (
+          <nav className="cat-nav" aria-label="Secciones">
+            {enlacesSecciones()}
+          </nav>
+        )}
       </header>
+
+      <Hoja titulo="Menú" abierta={menuAbierto} onCerrar={() => setMenuAbierto(false)}>
+        <nav className="cat-menu" aria-label="Menú">
+          {enlacesSecciones(() => setMenuAbierto(false))}
+          {(tienda?.envios || tienda?.cambios) && (
+            <Link
+              to="/catalogo"
+              onClick={() => {
+                setMenuAbierto(false)
+                setTimeout(() => document.querySelector('.cat-compra')?.scrollIntoView({ behavior: 'smooth' }), 150)
+              }}
+            >
+              Envíos y cambios
+            </Link>
+          )}
+          {tienda?.whatsapp && (
+            <a
+              href={enlaceWhatsapp(tienda.whatsapp, `Hola ${tienda.nombre} 👋`)}
+              onClick={() => registrar({ tipo: 'general', mensaje: `Hola ${tienda.nombre} 👋` })}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Icono nombre="chat" tam={18} /> WhatsApp
+            </a>
+          )}
+          {tienda?.instagram && (
+            <a href={`https://instagram.com/${tienda.instagram}`} target="_blank" rel="noreferrer">
+              <Icono nombre="instagram" tam={18} /> Instagram
+            </a>
+          )}
+        </nav>
+      </Hoja>
 
       <Outlet />
 
@@ -409,19 +529,26 @@ type Orden = 'recientes' | 'menor' | 'mayor' | 'rebajas'
 
 export function Catalogo() {
   const { tienda, prendas, cargando, error, recargar, registrar } = useCatalogo()
-  const [busqueda, setBusqueda] = useState('')
-  const [categoria, setCategoria] = useState('')
+  // Categoría, rebajas y búsqueda viven en la dirección (?c=Buzo, ?rebajas, ?q=nike)
+  // para que la barra de arriba y los enlaces compartidos lleven directo a ellas.
+  const [params, setParams] = useSearchParams()
+  const categoria = params.get('c') ?? ''
+  const soloRebajas = params.has('rebajas')
+  const busqueda = params.get('q') ?? ''
+  const cambiar = (cambios: Record<string, string | null>) => {
+    const n = new URLSearchParams(params)
+    for (const [k, v] of Object.entries(cambios)) {
+      if (v === null) n.delete(k)
+      else n.set(k, v)
+    }
+    setParams(n, { replace: true })
+  }
+  const setBusqueda = (q: string) => cambiar({ q: q || null })
   const [marca, setMarca] = useState('')
   const [talla, setTalla] = useState('')
   const [orden, setOrden] = useState<Orden>('recientes')
   const [verGuia, setVerGuia] = useState(false)
-  // /catalogo?rebajas abre directo en las rebajas (para compartir el enlace).
-  const [soloRebajas, setSoloRebajas] = useState(() => new URLSearchParams(location.search).has('rebajas'))
 
-  const categorias = useMemo(
-    () => [...new Set(prendas.map((p) => p.categoria).filter(Boolean) as string[])].sort(),
-    [prendas],
-  )
   const marcas = useMemo(() => [...new Set(prendas.map((p) => p.marca).filter(Boolean) as string[])].sort(), [prendas])
   const tallas = useMemo(
     () =>
@@ -432,11 +559,13 @@ export function Catalogo() {
   )
   const hayRebajas = prendas.some((p) => descuento(p) > 0)
   const maxDescuento = Math.max(0, ...prendas.map(descuento))
-  const verRebajas = () => {
-    setSoloRebajas(true)
-    setCategoria('')
-    document.querySelector('.cat-filtros')?.scrollIntoView({ behavior: 'smooth' })
-  }
+  const verRebajas = () => cambiar({ rebajas: '', c: null })
+
+  // Al elegir una categoría, las rebajas o buscar (también desde la barra de arriba) se baja a las prendas.
+  const buscandoAlgo = Boolean(busqueda)
+  useEffect(() => {
+    if (categoria || soloRebajas || buscandoAlgo) document.querySelector('.cat-filtros')?.scrollIntoView({ behavior: 'smooth' })
+  }, [categoria, soloRebajas, buscandoAlgo])
 
   const visibles = useMemo(() => {
     const q = normalizar(busqueda.trim())
@@ -524,32 +653,8 @@ export function Catalogo() {
               aria-label="Buscar"
             />
           </div>
-          {(categorias.length > 1 || hayRebajas) && (
-            <nav className="cat-chips" aria-label="Categorías">
-              <button
-                className={`cat-chip ${!categoria && !soloRebajas ? 'activo' : ''}`}
-                onClick={() => {
-                  setCategoria('')
-                  setSoloRebajas(false)
-                }}
-              >
-                Todo
-              </button>
-              {hayRebajas && (
-                <button
-                  className={`cat-chip cat-chip-rebajas ${soloRebajas ? 'activo' : ''}`}
-                  onClick={() => setSoloRebajas(!soloRebajas)}
-                  aria-pressed={soloRebajas}
-                >
-                  Rebajas
-                </button>
-              )}
-              {categorias.length > 1 && categorias.map((c) => (
-                <button key={c} className={`cat-chip ${categoria === c ? 'activo' : ''}`} onClick={() => setCategoria(c)}>
-                  {c}
-                </button>
-              ))}
-            </nav>
+          {(categoria || soloRebajas) && (
+            <h2 className="cat-titulo-lista">{soloRebajas ? 'Rebajas 🔥' : categoria}</h2>
           )}
           <div className="cat-selects">
             {tallas.length > 0 && (
@@ -589,11 +694,9 @@ export function Catalogo() {
                 <button
                   className="enlace"
                   onClick={() => {
-                    setBusqueda('')
-                    setCategoria('')
+                    cambiar({ q: null, c: null, rebajas: null })
                     setMarca('')
                     setTalla('')
-                    setSoloRebajas(false)
                   }}
                 >
                   Quitar filtros
