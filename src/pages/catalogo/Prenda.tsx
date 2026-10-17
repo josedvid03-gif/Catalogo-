@@ -7,7 +7,7 @@ import { Cargando } from '../../components/Comunes'
 import { Icono } from '../../components/Icono'
 import { TarjetaPrenda } from './Catalogo'
 import { descuento, esNueva, urlPrendaPublica, useCatalogo, type PrendaCatalogo } from './datos'
-import { GuiaTallas, InfoCompra, tablasPara } from './Ayudas'
+import { Descripcion, FraseImpulso, GuiaTallas, InfoCompra, Sellos, tablasPara } from './Ayudas'
 
 /** Descarga la foto principal para poder compartirla como imagen (WhatsApp, Instagram). */
 function useArchivoFoto(p: PrendaCatalogo | undefined) {
@@ -268,8 +268,10 @@ export function PrendaPublica() {
             </div>
           )}
 
-          {p.descripcion && <p className="cat-descripcion">{p.descripcion}</p>}
+          {p.descripcion && <Descripcion texto={p.descripcion} />}
 
+          <FraseImpulso />
+          <Sellos />
           <InfoCompra compacta />
 
           <ul className="cat-datos">

@@ -66,6 +66,8 @@ export interface Ajustes {
   cambios: string | null
   guia_tallas: TablaTallas[]
   video_portada: string | null
+  sellos: string[]
+  frase_prenda: string | null
 }
 
 /** Una tabla de la guía de tallas (ej. "Buzos y camibuzos"), medidas en cm. */

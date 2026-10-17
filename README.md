@@ -50,6 +50,8 @@ Se instala en la pantalla de inicio como una app y todos los dispositivos ven lo
   - **Video de portada** de fondo detrás del logo (se cambia o se quita en Ajustes).
   - **Guía de tallas** con tablas por categoría (Ajustes → Guía de tallas; trae una de ejemplo).
   - **Envíos, cambios y pagos** visibles en el catálogo y en cada prenda.
+  - En cada prenda: **frase de impulso** ("¡Llévala hoy antes de que se agote!"), **sellos de confianza**
+    (100% original, pago seguro…) y descripción con **viñetas** (líneas que empiezan con "-").
   - **Nunca muestra costos ni ganancias.**
 - **Varios WhatsApp (asesores)**: en Ajustes agregas los números de tus asesores; a cada cliente del
   catálogo le toca uno (siempre el mismo) y ve "Te atiende: …".
@@ -146,6 +148,7 @@ en Supabase abre **SQL Editor → New query**, pega el archivo indicado y presio
 | [`supabase/actualizaciones/03-pagos-nequi.sql`](supabase/actualizaciones/03-pagos-nequi.sql) | Nequi como método de pago y datos de pago en el catálogo |
 | [`supabase/actualizaciones/04-asesores-mensajes.sql`](supabase/actualizaciones/04-asesores-mensajes.sql) | Varios WhatsApp (asesores) y bandeja de mensajes del catálogo |
 | [`supabase/actualizaciones/05-tallas-envios.sql`](supabase/actualizaciones/05-tallas-envios.sql) | Guía de tallas, envíos y cambios, y video de portada |
+| [`supabase/actualizaciones/06-sellos-frase.sql`](supabase/actualizaciones/06-sellos-frase.sql) | Sellos de confianza y frase de impulso en cada prenda |
 
 Si instalas desde cero, basta con `supabase/schema.sql` (ya incluye todo).
 

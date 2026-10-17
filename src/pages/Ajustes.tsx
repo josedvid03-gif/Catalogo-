@@ -53,10 +53,18 @@ export function Ajustes() {
       cambios: form.cambios?.trim() || null,
       guia_tallas: limpiarGuia(form.guia_tallas ?? []),
     }
+    const prenda = {
+      sellos: (form.sellos ?? []).map((s) => s.trim()).filter(Boolean),
+      frase_prenda: form.frase_prenda?.trim() || null,
+    }
     const falta = (e: { code?: string } | null) => e && (e.code === 'PGRST204' || e.code === '42703')
     try {
       // Se intenta guardar todo; si faltan actualizaciones de la base de datos, se guarda lo que se pueda.
-      let r = await supabase.from('ajustes').update({ ...basicos, ...catalogo, ...pagos, ...extras }).eq('id', 1)
+      let r = await supabase.from('ajustes').update({ ...basicos, ...catalogo, ...pagos, ...extras, ...prenda }).eq('id', 1)
+      if (falta(r.error)) {
+        r = await supabase.from('ajustes').update({ ...basicos, ...catalogo, ...pagos, ...extras }).eq('id', 1)
+        if (!r.error) avisar('Para guardar los sellos y la frase falta la actualización 06 de la base de datos', 'error')
+      }
       if (falta(r.error)) {
         r = await supabase.from('ajustes').update({ ...basicos, ...catalogo, ...pagos }).eq('id', 1)
         if (!r.error)
@@ -345,6 +353,50 @@ export function Ajustes() {
             Usar texto de ejemplo y editarlo
           </button>
         )}
+        <BotonAccion className="btn btn-primario" onClick={guardar}>
+          Guardar ajustes
+        </BotonAccion>
+      </section>
+
+      <section className="tarjeta">
+        <h2>Página de cada prenda</h2>
+        <label className="campo">
+          <span>Frase de impulso (sale destacada en cada prenda)</span>
+          <input
+            value={form.frase_prenda ?? ''}
+            placeholder="¡Llévala hoy antes de que se agote!"
+            onChange={(e) => setForm({ ...form, frase_prenda: e.target.value })}
+          />
+        </label>
+        <div className="campo">
+          <span>Sellos de confianza (máximo 4, cortos)</span>
+          {(form.sellos ?? []).map((s, i) => (
+            <div key={i} className="fila-sello">
+              <input
+                value={s}
+                maxLength={28}
+                onChange={(e) => setForm({ ...form, sellos: form.sellos.map((x, j) => (j === i ? e.target.value : x)) })}
+              />
+              <button
+                type="button"
+                className="btn-icono"
+                aria-label={`Quitar sello ${s}`}
+                onClick={() => setForm({ ...form, sellos: form.sellos.filter((_, j) => j !== i) })}
+              >
+                <Icono nombre="cerrar" tam={16} />
+              </button>
+            </div>
+          ))}
+          {(form.sellos ?? []).length < 4 && (
+            <button type="button" className="enlace" onClick={() => setForm({ ...form, sellos: [...(form.sellos ?? []), ''] })}>
+              + Agregar sello
+            </button>
+          )}
+          <small className="sutil">
+            Ideas: 100% original · Pago seguro · Envíos a toda Colombia · Cambios fáciles · Atención por WhatsApp. Pon
+            solo lo que de verdad ofreces.
+          </small>
+        </div>
         <BotonAccion className="btn btn-primario" onClick={guardar}>
           Guardar ajustes
         </BotonAccion>

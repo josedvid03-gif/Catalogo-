@@ -3128,3 +3128,76 @@ body.modo-catalogo .avisos {
   padding: 4px 8px;
   text-align: center;
 }
+
+/* ---------- Catálogo: sellos, frase de impulso y viñetas ---------- */
+.cat-descripcion p {
+  margin: 0 0 8px;
+}
+.cat-descripcion ul {
+  margin: 0 0 8px;
+  padding-left: 1.2em;
+}
+.cat-descripcion li {
+  margin: 2px 0;
+}
+.cat-frase {
+  margin: 4px 0;
+  padding: 16px 14px;
+  background: var(--cat-negro);
+  color: var(--cat-crema);
+  font-family: var(--fuente-titulos);
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.03em;
+  text-align: center;
+  text-transform: uppercase;
+}
+@media (prefers-color-scheme: dark) {
+  .cat-frase {
+    background: var(--cat-crema);
+    color: var(--cat-negro);
+  }
+}
+.cat-sellos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  gap: 14px 8px;
+  margin: 6px 0;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+}
+.cat-sellos li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.cat-sello-circulo {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  outline: 1.5px solid currentColor;
+  outline-offset: 3px;
+  color: var(--texto);
+}
+.cat-sello-texto {
+  font-family: var(--fuente-titulos);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.fila-sello {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.fila-sello input {
+  flex: 1;
+}

@@ -836,6 +836,10 @@ alter table public.ajustes add column if not exists guia_tallas jsonb not null d
 -- puesto el video de la marca; se cambia o se quita en Ajustes.
 alter table public.ajustes add column if not exists video_portada text default '/video/portada.mp4';
 alter table public.ajustes alter column video_portada drop default;
+-- Sellos de confianza y frase de impulso en cada prenda (se editan en Ajustes).
+alter table public.ajustes add column if not exists sellos jsonb not null
+  default '["100% original", "Pago seguro", "Envíos a toda Colombia", "Atención por WhatsApp"]'::jsonb;
+alter table public.ajustes add column if not exists frase_prenda text;
 
 -- Catálogo público: fotos, precios, rebajas y tallas disponibles.
 -- Nunca expone costos ni datos de clientes.
@@ -850,6 +854,7 @@ as $$
                                'eslogan', eslogan, 'info', info_catalogo,
                                'envios', envios, 'cambios', cambios, 'guia_tallas', guia_tallas,
                                'video', video_portada,
+                               'sellos', sellos, 'frase', frase_prenda,
                                'pago', json_build_object('nequi', pago_nequi, 'titular', pago_titular,
                                                          'qr', pago_qr, 'otros', pago_otros))
       from public.ajustes where id = 1

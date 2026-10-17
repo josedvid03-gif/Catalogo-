@@ -1,7 +1,7 @@
 import { enlaceWhatsapp } from '../../lib/format'
 import type { TablaTallas } from '../../lib/types'
 import { Hoja } from '../../components/Comunes'
-import { Icono } from '../../components/Icono'
+import { Icono, type NombreIcono } from '../../components/Icono'
 import { useCatalogo } from './datos'
 
 function normalizar(s: string) {
@@ -116,5 +116,73 @@ export function InfoCompra({ compacta = false }: { compacta?: boolean }) {
         </div>
       ))}
     </section>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Sellos de confianza, frase de impulso y descripción con viñetas    */
+/* ------------------------------------------------------------------ */
+
+/** Ícono según lo que dice el sello ("Pago seguro" → candado…). */
+function iconoSello(texto: string): NombreIcono {
+  const t = normalizar(texto)
+  if (/origin|autentic|garantiz/.test(t)) return 'escudo'
+  if (/pago|segur|nequi|tarjeta/.test(t)) return 'candado'
+  if (/envi|domicil|entrega|colombia/.test(t)) return 'camion'
+  if (/cambio|devoluc/.test(t)) return 'cambio'
+  if (/whatsapp|atencion|servicio|asesor/.test(t)) return 'chat'
+  if (/calidad|premium|exclusiv/.test(t)) return 'estrella'
+  return 'check'
+}
+
+export function Sellos() {
+  const { tienda } = useCatalogo()
+  const sellos = (tienda?.sellos ?? []).filter((s) => s.trim())
+  if (!sellos.length) return null
+  return (
+    <ul className="cat-sellos" aria-label="Por qué comprar aquí">
+      {sellos.map((s) => (
+        <li key={s}>
+          <span className="cat-sello-circulo">
+            <Icono nombre={iconoSello(s)} tam={26} />
+          </span>
+          <span className="cat-sello-texto">{s}</span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+export function FraseImpulso() {
+  const { tienda } = useCatalogo()
+  if (!tienda?.frase?.trim()) return null
+  return <p className="cat-frase">{tienda.frase}</p>
+}
+
+/** Las líneas que empiezan con "-", "•" o "*" se muestran como lista. */
+export function Descripcion({ texto }: { texto: string }) {
+  const bloques: { lista: boolean; lineas: string[] }[] = []
+  for (const linea of texto.split('\n')) {
+    const vineta = /^\s*[-•*]\s+/.test(linea)
+    const limpia = linea.replace(/^\s*[-•*]\s+/, '').trim()
+    if (!limpia) continue
+    const ultimo = bloques[bloques.length - 1]
+    if (ultimo && ultimo.lista === vineta) ultimo.lineas.push(limpia)
+    else bloques.push({ lista: vineta, lineas: [limpia] })
+  }
+  return (
+    <div className="cat-descripcion">
+      {bloques.map((b, i) =>
+        b.lista ? (
+          <ul key={i}>
+            {b.lineas.map((l, j) => (
+              <li key={j}>{l}</li>
+            ))}
+          </ul>
+        ) : (
+          <p key={i}>{b.lineas.join('\n')}</p>
+        ),
+      )}
+    </div>
   )
 }

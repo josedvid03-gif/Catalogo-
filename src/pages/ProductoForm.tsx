@@ -351,7 +351,13 @@ export function ProductoForm() {
         </label>
         <label className="campo">
           <span>Descripción (se ve en el catálogo)</span>
-          <textarea rows={2} value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
+          <textarea
+            rows={4}
+            value={descripcion}
+            placeholder={'Buzo oversize en algodón perchado.\n- Capota ajustable\n- Bolsillo canguro\n- Logo bordado'}
+            onChange={(e) => setDescripcion(e.target.value)}
+          />
+          <small className="sutil">Las líneas que empiezan con "-" salen como lista en el catálogo.</small>
         </label>
         <div className="dos-columnas">
           <label className="campo">

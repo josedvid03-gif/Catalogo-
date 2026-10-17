@@ -34,6 +34,8 @@ export interface TiendaCatalogo {
   cambios?: string | null
   guia_tallas?: TablaTallas[]
   video?: string | null
+  sellos?: string[]
+  frase?: string | null
   pago?: { nequi: string | null; titular: string | null; qr: string | null; otros: string | null }
 }
 
