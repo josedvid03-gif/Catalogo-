@@ -3635,3 +3635,322 @@ body.con-barra-compra .cat-wa-flotante {
   letter-spacing: 1px;
   white-space: nowrap;
 }
+
+/* =====================================================================
+   Catálogo: acabado premium
+   Líneas finas, esquinas rectas, más aire, precios sobrios y dorado
+   discreto en lugar de rojo. (Va al final para refinar todo lo anterior.)
+   ===================================================================== */
+.cat {
+  --cat-dorado: #c8a96a;
+  --cat-linea: color-mix(in srgb, var(--texto) 12%, transparent);
+  --cat-linea-fuerte: color-mix(in srgb, var(--texto) 32%, transparent);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: 0.005em;
+}
+@media (prefers-color-scheme: light) {
+  .cat {
+    --cat-dorado: #9a7b3f;
+  }
+}
+
+/* Botones: rectos, finos y espaciados */
+.cat .cat-btn {
+  min-height: 52px;
+  border-width: 1px;
+  border-radius: 0;
+  font-size: 0.92rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
+}
+.cat .cat-btn-contorno-oscuro {
+  min-height: 46px;
+  border-color: var(--cat-linea-fuerte);
+  font-size: 0.8rem;
+}
+.cat .cat-btn-contorno-oscuro:hover {
+  border-color: var(--texto);
+}
+.cat .cat-btn-oscuro:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+/* Detalle de prenda: más aire y jerarquía tranquila */
+.cat .cat-detalle-info {
+  gap: 22px;
+}
+.cat .cat-marca {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+}
+.cat .cat-detalle-nombre {
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  line-height: 1.15;
+}
+.cat .cat-precio {
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+.cat .cat-precio-grande {
+  font-size: 1.45rem;
+  gap: 12px;
+}
+.cat .cat-precio-rebaja {
+  color: var(--texto);
+}
+.cat .cat-precio s {
+  color: var(--texto-2);
+  opacity: 0.8;
+}
+.cat .cat-ahorro {
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--cat-dorado);
+}
+.cat .cat-etiqueta {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  color: var(--texto-2);
+}
+.cat .cat-etiqueta em {
+  color: var(--cat-dorado);
+  font-weight: 600;
+}
+.cat .cat-etiqueta-fila .enlace {
+  color: var(--texto);
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--cat-linea-fuerte);
+}
+.cat .cat-talla {
+  min-width: 52px;
+  min-height: 48px;
+  border: 1px solid var(--cat-linea-fuerte);
+  border-radius: 0;
+  background: transparent;
+  color: var(--texto);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.cat .cat-talla:hover {
+  border-color: var(--texto);
+}
+.cat .cat-talla.activo {
+  border-color: var(--texto);
+  background: var(--texto);
+  color: var(--fondo);
+}
+.cat .cat-acciones-sec {
+  gap: 8px;
+}
+
+/* Preguntas rápidas: una fila fina que se desliza */
+.cat .cat-preguntas .cat-etiqueta {
+  margin-bottom: 10px;
+}
+.cat .cat-preguntas-lista {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  margin: 0 -16px;
+  padding: 0 16px 4px;
+  scrollbar-width: none;
+}
+.cat .cat-preguntas-lista::-webkit-scrollbar {
+  display: none;
+}
+.cat .cat-pregunta {
+  flex: none;
+  padding: 9px 14px;
+  border: 1px solid var(--cat-linea-fuerte);
+  border-radius: 999px;
+  background: transparent;
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
+}
+
+/* Descripción, frase y sellos */
+.cat .cat-descripcion {
+  color: var(--texto-2);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+.cat .cat-frase {
+  padding: 18px 8px;
+  border-top: 1px solid var(--cat-linea);
+  border-bottom: 1px solid var(--cat-linea);
+  background: none;
+  color: var(--texto);
+  font-size: 1.05rem;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+}
+.cat .cat-sellos {
+  gap: 18px 6px;
+}
+.cat .cat-sello-circulo {
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--cat-linea-fuerte);
+  outline: 0;
+  color: var(--cat-dorado);
+}
+.cat .cat-sello-circulo svg {
+  width: 22px;
+  height: 22px;
+}
+.cat .cat-sello-texto {
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  color: var(--texto-2);
+}
+.cat .cat-info-compacta,
+.cat .cat-info-compacta details,
+.cat .cat-datos,
+.cat .cat-datos li {
+  border-color: var(--cat-linea);
+}
+.cat .cat-info-compacta summary {
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+}
+
+/* Tarjetas del catálogo */
+.cat .cat-tarjeta {
+  gap: 12px;
+}
+.cat .cat-tarjeta-foto,
+.cat .cat-galeria,
+.cat .cat-sin-foto-grande {
+  border-radius: 0;
+}
+.cat .cat-tarjeta-info {
+  gap: 4px;
+}
+.cat .cat-nombre {
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+.cat .cat-tarjeta .cat-precio {
+  font-size: 1rem;
+}
+.cat .cat-insignia {
+  padding: 4px 8px;
+  border-radius: 0;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+}
+.cat .cat-insignia-rebaja {
+  background: var(--cat-dorado);
+  color: #0d0c0a;
+}
+.cat .cat-tallas-mini span {
+  border-color: var(--cat-linea);
+  border-radius: 0;
+}
+
+/* Títulos de sección más ligeros */
+.cat .cat-relacionadas h2,
+.cat .cat-opiniones-resumen h2,
+.cat .cat-titulo-lista,
+.cat .cat-compra-bloque h3 {
+  font-weight: 400;
+  letter-spacing: 0.14em;
+}
+.cat .cat-relacionadas {
+  margin-top: 64px;
+}
+.cat .cat-opiniones {
+  margin-top: 56px;
+}
+.cat .cat-opiniones-resumen,
+.cat .cat-opinion {
+  border-color: var(--cat-linea);
+}
+.cat .cat-estrellas .llena,
+.cat .cat-puntaje > span:first-child,
+.cat .cat-opinar-estrellas button.llena,
+.cat .opinion-estrellas {
+  color: var(--cat-dorado);
+}
+.cat .cat-compra-bloque {
+  border-color: var(--cat-linea);
+  border-radius: 0;
+  background: transparent;
+}
+.cat .cat-compra-bloque svg {
+  color: var(--cat-dorado);
+}
+
+/* Rebajas: negro y dorado en vez de rojo */
+.cat .cat-banda-rebajas {
+  background: #14120e;
+  color: var(--cat-crema);
+  border-top: 1px solid rgb(239 228 203 / 0.12);
+  border-bottom: 1px solid rgb(239 228 203 / 0.12);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+}
+.cat .cat-banda-titulo {
+  color: #c8a96a;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+}
+.cat .cat-nav a.cat-nav-rebajas {
+  color: #c8a96a;
+}
+.cat .cat-nav a.cat-nav-rebajas.activo {
+  border-bottom-color: #c8a96a;
+}
+.cat .cat-menu a.cat-nav-rebajas {
+  color: var(--cat-dorado);
+}
+.cat .cat-nav a {
+  font-weight: 400;
+  font-size: 0.9rem;
+  letter-spacing: 0.14em;
+}
+
+/* Buscador y filtros finos */
+.cat .cat-filtros .buscador,
+.cat .cat-selects select {
+  border: 1px solid var(--cat-linea-fuerte);
+  border-radius: 0;
+  background: transparent;
+}
+.cat .cat-barra-buscar {
+  border-radius: 0;
+}
+
+/* Barra de compra fija */
+.cat .cat-barra-compra {
+  border-top-color: var(--cat-linea);
+  box-shadow: none;
+  backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--superficie) 92%, transparent);
+}
+.cat .cat-barra-compra-precio strong {
+  font-weight: 500;
+  font-size: 1.2rem;
+}
+/* Las columnas de la prenda nunca más anchas que la pantalla (la fila de preguntas se desliza por dentro). */
+.cat .cat-detalle-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 860px) {
+  .cat .cat-detalle-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  }
+}
+.cat .cat-detalle-info {
+  min-width: 0;
+}

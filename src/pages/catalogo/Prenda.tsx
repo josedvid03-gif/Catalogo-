@@ -214,7 +214,7 @@ export function PrendaPublica() {
                 </span>
                 {hayGuia && (
                   <button className="enlace" onClick={() => setVerGuia(true)}>
-                    📏 Guía de tallas
+                    Guía de tallas
                   </button>
                 )}
               </span>

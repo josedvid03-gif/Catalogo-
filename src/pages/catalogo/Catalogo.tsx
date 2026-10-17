@@ -79,7 +79,7 @@ function MarcoInterno() {
       ))}
       {hayRebajas && (
         <Link to="/catalogo?rebajas" className={`cat-nav-rebajas ${params.has('rebajas') ? 'activo' : ''}`} onClick={alTocar}>
-          Rebajas 🔥
+          Rebajas
         </Link>
       )}
     </>
@@ -655,7 +655,7 @@ export function Catalogo() {
             />
           </div>
           {(categoria || soloRebajas) && (
-            <h2 className="cat-titulo-lista">{soloRebajas ? 'Rebajas 🔥' : categoria}</h2>
+            <h2 className="cat-titulo-lista">{soloRebajas ? 'Rebajas' : categoria}</h2>
           )}
           <div className="cat-selects">
             {tallas.length > 0 && (
@@ -685,7 +685,7 @@ export function Catalogo() {
           </div>
           {tablasPara(tienda?.guia_tallas, null).length > 0 && (
             <button className="enlace cat-enlace-guia" onClick={() => setVerGuia(true)}>
-              📏 Guía de tallas
+              Guía de tallas
             </button>
           )}
           {!cargando && (
