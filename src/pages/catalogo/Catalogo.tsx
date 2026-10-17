@@ -13,6 +13,7 @@ import {
   useCatalogo,
   type PrendaCatalogo,
 } from './datos'
+import { GuiaTallas, InfoCompra, tablasPara } from './Ayudas'
 
 function normalizar(s: string) {
   return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
@@ -400,6 +401,7 @@ export function Catalogo() {
   const [marca, setMarca] = useState('')
   const [talla, setTalla] = useState('')
   const [orden, setOrden] = useState<Orden>('recientes')
+  const [verGuia, setVerGuia] = useState(false)
   // /catalogo?rebajas abre directo en las rebajas (para compartir el enlace).
   const [soloRebajas, setSoloRebajas] = useState(() => new URLSearchParams(location.search).has('rebajas'))
 
@@ -444,7 +446,20 @@ export function Catalogo() {
 
   return (
     <>
-      <section className="cat-hero">
+      <section className={`cat-hero ${tienda?.video ? 'cat-hero-con-video' : ''}`}>
+        {tienda?.video && (
+          <video
+            className="cat-hero-video"
+            src={urlFoto(tienda.video)}
+            poster={tienda.video.startsWith('/video/') ? tienda.video.replace(/\.\w+$/, '.jpg') : undefined}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            aria-hidden="true"
+          />
+        )}
         <img src="/logo.png" alt={tienda?.nombre ?? ''} className="cat-hero-logo" width="150" height="150" />
         <h1 className="cat-hero-nombre">{tienda?.nombre ?? ' '}</h1>
         {tienda?.eslogan && <p className="cat-hero-eslogan">{tienda.eslogan}</p>}
@@ -550,6 +565,11 @@ export function Catalogo() {
               {hayRebajas && <option value="rebajas">Rebajas</option>}
             </select>
           </div>
+          {tablasPara(tienda?.guia_tallas, null).length > 0 && (
+            <button className="enlace cat-enlace-guia" onClick={() => setVerGuia(true)}>
+              📏 Guía de tallas
+            </button>
+          )}
           {!cargando && (
             <p className="cat-conteo">
               {visibles.length} prenda{visibles.length === 1 ? '' : 's'}
@@ -585,6 +605,9 @@ export function Catalogo() {
             <TarjetaPrenda key={p.id} prenda={p} />
           ))}
         </div>
+
+        <InfoCompra />
+        <GuiaTallas categoria={categoria || null} abierta={verGuia} onCerrar={() => setVerGuia(false)} />
       </main>
     </>
   )

@@ -62,6 +62,20 @@ export interface Ajustes {
   pago_titular: string | null
   pago_qr: string | null
   pago_otros: string | null
+  envios: string | null
+  cambios: string | null
+  guia_tallas: TablaTallas[]
+  video_portada: string | null
+}
+
+/** Una tabla de la guía de tallas (ej. "Buzos y camibuzos"), medidas en cm. */
+export interface TablaTallas {
+  nombre: string
+  /** Categorías a las que aplica, separadas por coma (vacío = todas). */
+  categorias: string
+  columnas: string[]
+  /** Cada fila: [talla, medida1, medida2…] */
+  filas: string[][]
 }
 
 export interface LineaItem {

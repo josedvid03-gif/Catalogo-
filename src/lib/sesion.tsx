@@ -25,6 +25,10 @@ const AJUSTES_POR_DEFECTO: Ajustes = {
   info_catalogo: null,
   pago_nequi: null,
   pago_titular: null,
+  envios: null,
+  cambios: null,
+  guia_tallas: [],
+  video_portada: null,
   pago_qr: null,
   pago_otros: null,
 }

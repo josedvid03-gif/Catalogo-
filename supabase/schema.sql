@@ -825,6 +825,18 @@ begin
 end;
 $$;
 
+-- ---------------------------------------------------------------------
+--  Guía de tallas, envíos y cambios
+-- ---------------------------------------------------------------------
+alter table public.ajustes add column if not exists envios      text;
+alter table public.ajustes add column if not exists cambios     text;
+alter table public.ajustes add column if not exists guia_tallas jsonb not null default '[]'::jsonb;
+-- Video de fondo en la portada del catálogo (ruta en el almacenamiento de fotos,
+-- o un archivo de la página como '/video/portada.mp4'). La primera vez queda
+-- puesto el video de la marca; se cambia o se quita en Ajustes.
+alter table public.ajustes add column if not exists video_portada text default '/video/portada.mp4';
+alter table public.ajustes alter column video_portada drop default;
+
 -- Catálogo público: fotos, precios, rebajas y tallas disponibles.
 -- Nunca expone costos ni datos de clientes.
 create or replace function public.catalogo_publico()
@@ -836,6 +848,8 @@ as $$
     'tienda', (
       select json_build_object('nombre', nombre_tienda, 'whatsapp', whatsapp, 'instagram', instagram,
                                'eslogan', eslogan, 'info', info_catalogo,
+                               'envios', envios, 'cambios', cambios, 'guia_tallas', guia_tallas,
+                               'video', video_portada,
                                'pago', json_build_object('nequi', pago_nequi, 'titular', pago_titular,
                                                          'qr', pago_qr, 'otros', pago_otros))
       from public.ajustes where id = 1

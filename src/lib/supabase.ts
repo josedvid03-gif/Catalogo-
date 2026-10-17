@@ -10,6 +10,8 @@ export const supabase = createClient(url || 'http://localhost', key || 'sin-conf
 export const BUCKET = 'productos'
 
 export function urlFoto(ruta: string): string {
+  // Archivos que vienen con la página (ej. '/video/portada.mp4') o enlaces completos.
+  if (ruta.startsWith('/') || /^https?:\/\//.test(ruta)) return ruta
   return supabase.storage.from(BUCKET).getPublicUrl(ruta).data.publicUrl
 }
 

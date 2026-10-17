@@ -40,3 +40,14 @@ export async function borrarFotos(rutas: string[]): Promise<void> {
   const { error } = await supabase.storage.from(BUCKET).remove(rutas)
   if (error) throw error
 }
+
+/** Video de la portada del catálogo: se sube tal cual (sin comprimir). */
+export async function subirVideo(archivo: File): Promise<string> {
+  const ext = (archivo.name.split('.').pop() ?? 'mp4').toLowerCase().replace(/[^a-z0-9]/g, '') || 'mp4'
+  const ruta = `tienda/portada-${Date.now()}.${ext}`
+  const { error } = await supabase.storage
+    .from(BUCKET)
+    .upload(ruta, archivo, { contentType: archivo.type || 'video/mp4', cacheControl: '31536000' })
+  if (error) throw error
+  return ruta
+}

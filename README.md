@@ -47,6 +47,9 @@ Se instala en la pantalla de inicio como una app y todos los dispositivos ven lo
   - El pedido pide **datos de envío** (nombre, celular, cédula, ciudad, dirección) o "recoger en persona",
     y muestra **cómo pagar por Nequi** (número con botón copiar y QR).
   - Botón flotante de **WhatsApp** y **preguntas rápidas** en cada prenda.
+  - **Video de portada** de fondo detrás del logo (se cambia o se quita en Ajustes).
+  - **Guía de tallas** con tablas por categoría (Ajustes → Guía de tallas; trae una de ejemplo).
+  - **Envíos, cambios y pagos** visibles en el catálogo y en cada prenda.
   - **Nunca muestra costos ni ganancias.**
 - **Varios WhatsApp (asesores)**: en Ajustes agregas los números de tus asesores; a cada cliente del
   catálogo le toca uno (siempre el mismo) y ve "Te atiende: …".
@@ -142,6 +145,7 @@ en Supabase abre **SQL Editor → New query**, pega el archivo indicado y presio
 | [`supabase/actualizaciones/02-marcas-clientes-catalogo.sql`](supabase/actualizaciones/02-marcas-clientes-catalogo.sql) | Marcas, rebajas, clientes y catálogo profesional |
 | [`supabase/actualizaciones/03-pagos-nequi.sql`](supabase/actualizaciones/03-pagos-nequi.sql) | Nequi como método de pago y datos de pago en el catálogo |
 | [`supabase/actualizaciones/04-asesores-mensajes.sql`](supabase/actualizaciones/04-asesores-mensajes.sql) | Varios WhatsApp (asesores) y bandeja de mensajes del catálogo |
+| [`supabase/actualizaciones/05-tallas-envios.sql`](supabase/actualizaciones/05-tallas-envios.sql) | Guía de tallas, envíos y cambios, y video de portada |
 
 Si instalas desde cero, basta con `supabase/schema.sql` (ya incluye todo).
 

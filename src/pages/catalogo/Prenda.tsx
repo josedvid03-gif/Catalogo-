@@ -7,6 +7,7 @@ import { Cargando } from '../../components/Comunes'
 import { Icono } from '../../components/Icono'
 import { TarjetaPrenda } from './Catalogo'
 import { descuento, esNueva, urlPrendaPublica, useCatalogo, type PrendaCatalogo } from './datos'
+import { GuiaTallas, InfoCompra, tablasPara } from './Ayudas'
 
 /** Descarga la foto principal para poder compartirla como imagen (WhatsApp, Instagram). */
 function useArchivoFoto(p: PrendaCatalogo | undefined) {
@@ -35,6 +36,7 @@ export function PrendaPublica() {
   const p = prendas.find((x) => x.id === id)
   const [varianteId, setVarianteId] = useState<string | null>(null)
   const [foto, setFoto] = useState(0)
+  const [verGuia, setVerGuia] = useState(false)
   const galeria = useRef<HTMLDivElement>(null)
   const archivo = useArchivoFoto(p)
 
@@ -80,6 +82,7 @@ export function PrendaPublica() {
   }
 
   const d = descuento(p)
+  const hayGuia = tablasPara(tienda?.guia_tallas, p.categoria).length > 0
   const elegida = variantes.find((v) => v.id === varianteId)
   const enPedido = pedido.find((l) => l.varianteId === varianteId)
   const textoCompartir = `${p.nombre}${p.marca && !p.nombre.toLowerCase().includes(p.marca.toLowerCase()) ? ` (${p.marca})` : ''} — ${cop(p.precio)}${
@@ -176,9 +179,16 @@ export function PrendaPublica() {
 
           {variantes.length > 0 && (
             <div className="cat-elegir">
-              <span className="cat-etiqueta">
-                {variantes.length === 1 ? 'Talla' : 'Elige tu talla'}
-                {elegida && elegida.disponible === 1 && <em> · ¡Última unidad!</em>}
+              <span className="cat-etiqueta cat-etiqueta-fila">
+                <span>
+                  {variantes.length === 1 ? 'Talla' : 'Elige tu talla'}
+                  {elegida && elegida.disponible === 1 && <em> · ¡Última unidad!</em>}
+                </span>
+                {hayGuia && (
+                  <button className="enlace" onClick={() => setVerGuia(true)}>
+                    📏 Guía de tallas
+                  </button>
+                )}
               </span>
               <div className="cat-tallas">
                 {variantes.map((v) => (
@@ -260,6 +270,8 @@ export function PrendaPublica() {
 
           {p.descripcion && <p className="cat-descripcion">{p.descripcion}</p>}
 
+          <InfoCompra compacta />
+
           <ul className="cat-datos">
             {p.categoria && (
               <li>
@@ -277,6 +289,8 @@ export function PrendaPublica() {
           {tienda?.info && <p className="cat-info-tienda">{tienda.info}</p>}
         </div>
       </div>
+
+      <GuiaTallas categoria={p.categoria} abierta={verGuia} onCerrar={() => setVerGuia(false)} />
 
       {relacionadas.length > 0 && (
         <section className="cat-relacionadas">

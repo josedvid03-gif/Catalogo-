@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase, datos, mensajeError, urlFoto } from '../lib/supabase'
-import { subirFoto } from '../lib/imagenes'
+import { borrarFotos, subirFoto, subirVideo } from '../lib/imagenes'
 import { useCarga } from '../lib/hooks'
 import { useAvisar } from '../lib/aviso'
 import { useAjustes, useSesion } from '../lib/sesion'
@@ -8,6 +8,7 @@ import { ocultarNombre } from '../lib/format'
 import { BotonAccion, CajaError } from '../components/Comunes'
 import { Icono } from '../components/Icono'
 import { AsesoresAjustes } from '../components/AsesoresAjustes'
+import { GuiaTallasAjustes, limpiarGuia } from '../components/GuiaTallasAjustes'
 
 export function Ajustes() {
   const avisar = useAvisar()
@@ -47,10 +48,20 @@ export function Ajustes() {
       pago_qr: form.pago_qr || null,
       pago_otros: form.pago_otros?.trim() || null,
     }
+    const extras = {
+      envios: form.envios?.trim() || null,
+      cambios: form.cambios?.trim() || null,
+      guia_tallas: limpiarGuia(form.guia_tallas ?? []),
+    }
     const falta = (e: { code?: string } | null) => e && (e.code === 'PGRST204' || e.code === '42703')
     try {
       // Se intenta guardar todo; si faltan actualizaciones de la base de datos, se guarda lo que se pueda.
-      let r = await supabase.from('ajustes').update({ ...basicos, ...catalogo, ...pagos }).eq('id', 1)
+      let r = await supabase.from('ajustes').update({ ...basicos, ...catalogo, ...pagos, ...extras }).eq('id', 1)
+      if (falta(r.error)) {
+        r = await supabase.from('ajustes').update({ ...basicos, ...catalogo, ...pagos }).eq('id', 1)
+        if (!r.error)
+          avisar('Para guardar envíos, cambios y guía de tallas falta la actualización 05 de la base de datos', 'error')
+      }
       if (falta(r.error)) {
         r = await supabase.from('ajustes').update({ ...basicos, ...catalogo }).eq('id', 1)
         if (!r.error) avisar('Para guardar los datos de Nequi falta la actualización 03 de la base de datos', 'error')
@@ -60,11 +71,31 @@ export function Ajustes() {
         if (!r.error) avisar('Para guardar los textos del catálogo falta la actualización 02 de la base de datos', 'error')
       }
       datos(r)
-      setForm((f) => ({ ...f, pago_titular: pagos.pago_titular }))
+      setForm((f) => ({ ...f, pago_titular: pagos.pago_titular, guia_tallas: extras.guia_tallas }))
       await recargarAjustes()
       avisar('Ajustes guardados')
     } catch (e) {
       avisar(mensajeError(e), 'error')
+    }
+  }
+
+  const [subiendoVideo, setSubiendoVideo] = useState(false)
+  const cambiarVideo = async (archivo?: File) => {
+    if (archivo && archivo.size > 45 * 1024 * 1024) {
+      return avisar('El video pesa más de 45 MB. Usa uno más corto (10–20 segundos).', 'error')
+    }
+    setSubiendoVideo(true)
+    try {
+      const ruta = archivo ? await subirVideo(archivo) : null
+      datos(await supabase.from('ajustes').update({ video_portada: ruta }).eq('id', 1))
+      if (form.video_portada && !form.video_portada.startsWith('/')) await borrarFotos([form.video_portada]).catch(() => undefined)
+      setForm((f) => ({ ...f, video_portada: ruta }))
+      await recargarAjustes()
+      avisar(ruta ? 'Video puesto en la portada del catálogo' : 'Video quitado')
+    } catch (e) {
+      avisar(mensajeError(e), 'error')
+    } finally {
+      setSubiendoVideo(false)
     }
   }
 
@@ -175,11 +206,11 @@ export function Ajustes() {
           />
         </label>
         <label className="campo">
-          <span>Información para clientes (envíos, pagos, cambios)</span>
+          <span>Información general para clientes (sale al final del catálogo)</span>
           <textarea
-            rows={3}
+            rows={2}
             value={form.info_catalogo ?? ''}
-            placeholder={'Ej: Envíos a toda Colombia 🇨🇴\nPagos por Nequi, Daviplata o transferencia\nCambios hasta 8 días después'}
+            placeholder="Ej: Ropa 100% original · Tienda en Medellín, Cra 43 # 10-20"
             onChange={(e) => setForm({ ...form, info_catalogo: e.target.value })}
           />
         </label>
@@ -247,6 +278,85 @@ export function Ajustes() {
             onChange={(e) => setForm({ ...form, pago_otros: e.target.value })}
           />
         </label>
+        <BotonAccion className="btn btn-primario" onClick={guardar}>
+          Guardar ajustes
+        </BotonAccion>
+      </section>
+
+      <section className="tarjeta">
+        <h2>Video de portada del catálogo</h2>
+        <p className="sutil">
+          Se ve de fondo detrás del logo, sin sonido y en repetición. Usa un video corto (10–20 segundos), horizontal y en
+          formato MP4. Si no hay video, se ve el fondo negro.
+        </p>
+        {form.video_portada && (
+          <video className="video-vista" src={urlFoto(form.video_portada)} muted loop autoPlay playsInline />
+        )}
+        <div className="acciones">
+          <label className={`btn ${subiendoVideo ? 'deshabilitado' : ''}`}>
+            <Icono nombre="camara" tam={16} /> {subiendoVideo ? 'Subiendo…' : form.video_portada ? 'Cambiar video' : 'Subir video'}
+            <input
+              type="file"
+              accept="video/mp4,video/webm,video/quicktime,video/*"
+              hidden
+              disabled={subiendoVideo}
+              onChange={(e) => {
+                void cambiarVideo(e.target.files?.[0])
+                e.target.value = ''
+              }}
+            />
+          </label>
+          {form.video_portada && (
+            <BotonAccion className="btn" onClick={() => cambiarVideo()}>
+              <Icono nombre="basura" tam={16} /> Quitar video
+            </BotonAccion>
+          )}
+        </div>
+      </section>
+
+      <section className="tarjeta">
+        <h2>Envíos y cambios</h2>
+        <p className="sutil">Se muestran en el catálogo y en cada prenda, para que el cliente compre con confianza.</p>
+        <label className="campo">
+          <span>Envíos</span>
+          <textarea
+            rows={4}
+            value={form.envios ?? ''}
+            placeholder={EJEMPLO_ENVIOS}
+            onChange={(e) => setForm({ ...form, envios: e.target.value })}
+          />
+        </label>
+        {!form.envios && (
+          <button type="button" className="enlace" onClick={() => setForm({ ...form, envios: EJEMPLO_ENVIOS })}>
+            Usar texto de ejemplo y editarlo
+          </button>
+        )}
+        <label className="campo">
+          <span>Cambios</span>
+          <textarea
+            rows={4}
+            value={form.cambios ?? ''}
+            placeholder={EJEMPLO_CAMBIOS}
+            onChange={(e) => setForm({ ...form, cambios: e.target.value })}
+          />
+        </label>
+        {!form.cambios && (
+          <button type="button" className="enlace" onClick={() => setForm({ ...form, cambios: EJEMPLO_CAMBIOS })}>
+            Usar texto de ejemplo y editarlo
+          </button>
+        )}
+        <BotonAccion className="btn btn-primario" onClick={guardar}>
+          Guardar ajustes
+        </BotonAccion>
+      </section>
+
+      <section className="tarjeta">
+        <h2>Guía de tallas</h2>
+        <p className="sutil">
+          Aparece como "📏 Guía de tallas" en el catálogo y en cada prenda (con la tabla de su categoría). Medidas en cm
+          con la prenda en plano. Si usas la de ejemplo, revisa las medidas con tus prendas.
+        </p>
+        <GuiaTallasAjustes valor={form.guia_tallas ?? []} onChange={(g) => setForm({ ...form, guia_tallas: g })} />
         <BotonAccion className="btn btn-primario" onClick={guardar}>
           Guardar ajustes
         </BotonAccion>
@@ -325,3 +435,12 @@ export function Ajustes() {
     </div>
   )
 }
+
+const EJEMPLO_ENVIOS = `Envíos a toda Colombia 🇨🇴
+Llega en 2 a 5 días hábiles según tu ciudad.
+El valor del envío te lo confirmamos por WhatsApp antes de pagar.
+Despachamos el mismo día si pagas antes de las 3:00 p. m.`
+
+const EJEMPLO_CAMBIOS = `Cambios de talla hasta 5 días hábiles después de recibir tu pedido.
+La prenda debe estar sin usar, sin lavar y con sus etiquetas.
+Escríbenos por WhatsApp para coordinar el cambio.`
