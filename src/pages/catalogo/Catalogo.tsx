@@ -15,6 +15,19 @@ import {
 } from './datos'
 import { GuiaTallas, InfoCompra, tablasPara } from './Ayudas'
 
+/** Videos de la marca que vienen con la página y tienen versión vertical para celular. */
+const VIDEO_VERTICAL: Record<string, string> = { '/video/portada.mp4': '/video/portada-vertical.mp4' }
+
+/** En pantallas verticales (celular) usa la versión vertical del video si existe. */
+function videoPortada(ruta: string): { src: string; poster?: string } {
+  const vertical = VIDEO_VERTICAL[ruta]
+  const usar = vertical && window.matchMedia('(max-aspect-ratio: 4/5)').matches ? vertical : ruta
+  return {
+    src: urlFoto(usar),
+    poster: usar.startsWith('/video/') ? usar.replace(/\.\w+$/, '.jpg') : undefined,
+  }
+}
+
 function normalizar(s: string) {
   return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 }
@@ -450,8 +463,7 @@ export function Catalogo() {
         {tienda?.video && (
           <video
             className="cat-hero-video"
-            src={urlFoto(tienda.video)}
-            poster={tienda.video.startsWith('/video/') ? tienda.video.replace(/\.\w+$/, '.jpg') : undefined}
+            {...videoPortada(tienda.video)}
             autoPlay
             muted
             loop
