@@ -52,6 +52,10 @@ Se instala en la pantalla de inicio como una app y todos los dispositivos ven lo
   - **Envíos, cambios y pagos** visibles en el catálogo y en cada prenda.
   - En cada prenda: **frase de impulso** ("¡Llévala hoy antes de que se agote!"), **sellos de confianza**
     (100% original, pago seguro…) y descripción con **viñetas** (líneas que empiezan con "-").
+  - **Opiniones de clientes** con estrellas, comentario y fotos. Después de una venta, en **Ventas → Pedir
+    opinión** le llega al cliente un enlace personal por WhatsApp; esas salen como **Compra verificada**.
+    Ninguna se publica sin aprobarla en **Más → Opiniones**.
+  - **Barra de compra fija** abajo en cada prenda al bajar por la página.
   - **Nunca muestra costos ni ganancias.**
 - **Varios WhatsApp (asesores)**: en Ajustes agregas los números de tus asesores; a cada cliente del
   catálogo le toca uno (siempre el mismo) y ve "Te atiende: …".
@@ -149,6 +153,7 @@ en Supabase abre **SQL Editor → New query**, pega el archivo indicado y presio
 | [`supabase/actualizaciones/04-asesores-mensajes.sql`](supabase/actualizaciones/04-asesores-mensajes.sql) | Varios WhatsApp (asesores) y bandeja de mensajes del catálogo |
 | [`supabase/actualizaciones/05-tallas-envios.sql`](supabase/actualizaciones/05-tallas-envios.sql) | Guía de tallas, envíos y cambios, y video de portada |
 | [`supabase/actualizaciones/06-sellos-frase.sql`](supabase/actualizaciones/06-sellos-frase.sql) | Sellos de confianza y frase de impulso en cada prenda |
+| [`supabase/actualizaciones/07-opiniones.sql`](supabase/actualizaciones/07-opiniones.sql) | Opiniones de clientes (con compra verificada) |
 
 Si instalas desde cero, basta con `supabase/schema.sql` (ya incluye todo).
 

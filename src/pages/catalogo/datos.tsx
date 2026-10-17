@@ -71,9 +71,22 @@ export interface LineaPedido {
   cantidad: number
 }
 
+/** Opinión publicada de un cliente (el nombre llega corto: "Alberto R."). */
+export interface Opinion {
+  id: string
+  nombre: string
+  estrellas: number
+  texto: string | null
+  fotos: string[]
+  verificada: boolean
+  producto_id: string | null
+  fecha: string
+}
+
 interface Ctx {
   tienda: TiendaCatalogo | null
   prendas: PrendaCatalogo[]
+  opiniones: Opinion[]
   cargando: boolean
   error: string | null
   recargar: () => Promise<void>
@@ -124,14 +137,18 @@ function leerPedido(): LineaPedido[] {
 
 export function ProveedorCatalogo({ children }: { children: ReactNode }) {
   const carga = useCarga(async () => {
-    const r = datos(await supabase.rpc('catalogo_publico')) as {
+    const [catalogo, ops] = await Promise.all([supabase.rpc('catalogo_publico'), supabase.rpc('opiniones_publicas')])
+    const r = datos(catalogo) as {
       tienda: TiendaCatalogo
       productos: PrendaCatalogo[]
       asesores?: Asesor[]
     }
+    // Sin la actualización 07 simplemente no hay opiniones.
+    const opiniones = ops.error ? [] : ((ops.data ?? []) as Opinion[])
     const asesor = elegirAsesor(r.asesores ?? [])
     return {
       asesor,
+      opiniones,
       // Todos los botones de WhatsApp del catálogo usan el número del asesor asignado.
       tienda: { ...r.tienda, whatsapp: asesor?.whatsapp ?? r.tienda.whatsapp },
       prendas: r.productos.map((p) => ({
@@ -215,6 +232,7 @@ export function ProveedorCatalogo({ children }: { children: ReactNode }) {
   const valor: Ctx = {
     tienda: carga.data?.tienda ?? null,
     prendas: carga.data?.prendas ?? [],
+    opiniones: carga.data?.opiniones ?? [],
     cargando: carga.cargando,
     error: carga.error,
     recargar: carga.recargar,

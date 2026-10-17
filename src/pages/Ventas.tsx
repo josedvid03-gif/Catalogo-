@@ -6,6 +6,7 @@ import { useAvisar } from '../lib/aviso'
 import { cop, fechaHora, mesActual, moverMes, nombreMes, rangoMes } from '../lib/format'
 import type { Venta } from '../lib/types'
 import { BotonAccion, CajaError, Cargando, Dato, Hoja, Total, Vacio } from '../components/Comunes'
+import { PedirOpinion } from '../components/PedirOpinion'
 import { nombreMetodo } from '../components/MetodoPago'
 import { Icono } from '../components/Icono'
 
@@ -141,6 +142,7 @@ export function Ventas() {
             <Total etiqueta="Total" valor={detalle.total} fuerte />
             <Total etiqueta="Costo" valor={detalle.costo_total} />
             <Total etiqueta="Ganancia" valor={detalle.total - detalle.costo_total} />
+            {!detalle.anulada && <PedirOpinion venta={detalle} />}
             {detalle.anulada ? (
               <p className="etiqueta etiqueta-mal">Venta anulada</p>
             ) : (

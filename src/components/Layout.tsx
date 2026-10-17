@@ -2,6 +2,7 @@ import { NavLink, Outlet, Link, useLocation } from 'react-router-dom'
 import { useAjustes } from '../lib/sesion'
 import { useCarga } from '../lib/hooks'
 import { contarMensajesNuevos } from '../pages/Mensajes'
+import { contarOpinionesPendientes } from '../pages/OpinionesEquipo'
 import { Icono, type NombreIcono } from './Icono'
 
 interface Seccion {
@@ -22,6 +23,7 @@ const INFERIOR: Seccion[] = [
 /** Todo lo que está en "Más". */
 export const SECCIONES_MAS: (Seccion & { detalle: string })[] = [
   { a: '/mensajes', nombre: 'Mensajes', icono: 'chat', detalle: 'Lo que llega por WhatsApp desde el catálogo' },
+  { a: '/opiniones', nombre: 'Opiniones', icono: 'estrella', detalle: 'Reseñas de clientes en el catálogo' },
   { a: '/ventas', nombre: 'Ventas', icono: 'ventas', detalle: 'Historial y anulaciones' },
   { a: '/caja', nombre: 'Caja y gastos', icono: 'billetera', detalle: 'Cierre del día y gastos' },
   { a: '/clientes', nombre: 'Clientes', icono: 'clientes', detalle: 'Historial y avisos por talla' },
@@ -102,6 +104,7 @@ export function Layout() {
 
 export function Mas() {
   const nuevos = useCarga(contarMensajesNuevos).data ?? 0
+  const porAprobar = useCarga(contarOpinionesPendientes).data ?? 0
   return (
     <div className="pagina">
       <div className="titulo-pagina">
@@ -119,6 +122,9 @@ export function Mas() {
                 <span className="sutil">{s.detalle}</span>
               </span>
               {s.a === '/mensajes' && nuevos > 0 && <span className="etiqueta etiqueta-aviso">{nuevos} nuevos</span>}
+              {s.a === '/opiniones' && porAprobar > 0 && (
+                <span className="etiqueta etiqueta-aviso">{porAprobar} por aprobar</span>
+              )}
               <Icono nombre="adelante" tam={18} className="sutil" />
             </Link>
           </li>

@@ -14,6 +14,7 @@ import {
   type PrendaCatalogo,
 } from './datos'
 import { GuiaTallas, InfoCompra, tablasPara } from './Ayudas'
+import { OpinionesInicio, PuntajePrenda } from './Opiniones'
 
 /** Videos de la marca que vienen con la página y tienen versión vertical para celular. */
 const VIDEO_VERTICAL: Record<string, string> = { '/video/portada.mp4': '/video/portada-vertical.mp4' }
@@ -721,6 +722,7 @@ export function Catalogo() {
           ))}
         </div>
 
+        {!filtrando && <OpinionesInicio />}
         <InfoCompra />
         <GuiaTallas categoria={categoria || null} abierta={verGuia} onCerrar={() => setVerGuia(false)} />
       </main>
@@ -756,6 +758,7 @@ export function TarjetaPrenda({ prenda: p }: { prenda: PrendaCatalogo }) {
           <span className={d ? 'cat-precio-rebaja' : ''}>{cop(p.precio)}</span>
           {d > 0 && <s>{cop(p.precio_antes!)}</s>}
         </span>
+        <PuntajePrenda productoId={p.id} />
         {tallas.length > 0 && (
           <span className="cat-tallas-mini">
             {tallas.slice(0, 6).map((t) => (

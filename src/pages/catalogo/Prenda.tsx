@@ -8,6 +8,7 @@ import { Icono } from '../../components/Icono'
 import { TarjetaPrenda } from './Catalogo'
 import { descuento, esNueva, urlPrendaPublica, useCatalogo, type PrendaCatalogo } from './datos'
 import { Descripcion, FraseImpulso, GuiaTallas, InfoCompra, Sellos, tablasPara } from './Ayudas'
+import { OpinionesPrenda, PuntajePrenda } from './Opiniones'
 
 /** Descarga la foto principal para poder compartirla como imagen (WhatsApp, Instagram). */
 function useArchivoFoto(p: PrendaCatalogo | undefined) {
@@ -38,6 +39,8 @@ export function PrendaPublica() {
   const [foto, setFoto] = useState(0)
   const [verGuia, setVerGuia] = useState(false)
   const galeria = useRef<HTMLDivElement>(null)
+  const botonCompra = useRef<HTMLButtonElement>(null)
+  const [barraCompra, setBarraCompra] = useState(false)
   const archivo = useArchivoFoto(p)
 
   const variantes = useMemo(
@@ -59,6 +62,30 @@ export function PrendaPublica() {
   useEffect(() => {
     if (p && tienda) document.title = `${p.nombre} · ${tienda.nombre}`
   }, [p, tienda])
+
+  // Barra de compra fija abajo cuando el botón principal ya quedó arriba, fuera de la pantalla.
+  const hayPrenda = Boolean(p)
+  useEffect(() => {
+    if (!hayPrenda) return
+    let cuadro = 0
+    const revisar = () => {
+      cancelAnimationFrame(cuadro)
+      cuadro = requestAnimationFrame(() => {
+        const b = botonCompra.current
+        setBarraCompra(Boolean(b && b.getBoundingClientRect().bottom < 0))
+      })
+    }
+    window.addEventListener('scroll', revisar, { passive: true })
+    revisar()
+    return () => {
+      window.removeEventListener('scroll', revisar)
+      cancelAnimationFrame(cuadro)
+    }
+  }, [hayPrenda])
+  useEffect(() => {
+    document.body.classList.toggle('con-barra-compra', barraCompra)
+    return () => document.body.classList.remove('con-barra-compra')
+  }, [barraCompra])
 
   const relacionadas = useMemo(() => {
     if (!p) return []
@@ -167,6 +194,7 @@ export function PrendaPublica() {
         <div className="cat-detalle-info">
           {p.marca && <span className="cat-marca">{p.marca}</span>}
           <h1 className="cat-detalle-nombre">{p.nombre}</h1>
+          <PuntajePrenda productoId={p.id} />
           <p className="cat-precio cat-precio-grande">
             <span className={d ? 'cat-precio-rebaja' : ''}>{cop(p.precio)}</span>
             {d > 0 && (
@@ -206,6 +234,7 @@ export function PrendaPublica() {
           )}
 
           <button
+            ref={botonCompra}
             className="cat-btn cat-btn-oscuro cat-btn-bloque"
             disabled={!elegida}
             onClick={() => {
@@ -292,6 +321,29 @@ export function PrendaPublica() {
         </div>
       </div>
 
+      <OpinionesPrenda productoId={p.id} />
+
+      {barraCompra && (
+        <div className="cat-barra-compra">
+          <span className="cat-barra-compra-precio">
+            <strong className={d ? 'cat-precio-rebaja' : ''}>{cop(p.precio)}</strong>
+            {d > 0 && <s>{cop(p.precio_antes!)}</s>}
+          </span>
+          <button
+            className="cat-btn cat-btn-oscuro"
+            onClick={() => {
+              if (!elegida) {
+                document.querySelector('.cat-elegir')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                return
+              }
+              agregar(p, elegida)
+              avisar('Agregado a tu pedido')
+            }}
+          >
+            <Icono nombre="bolsa" tam={18} /> {elegida ? 'Agregar al pedido' : 'Elegir talla'}
+          </button>
+        </div>
+      )}
       <GuiaTallas categoria={p.categoria} abierta={verGuia} onCerrar={() => setVerGuia(false)} />
 
       {relacionadas.length > 0 && (

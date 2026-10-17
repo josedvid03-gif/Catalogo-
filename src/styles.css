@@ -3355,3 +3355,283 @@ body.modo-catalogo .avisos {
     color: #ff8a80;
   }
 }
+
+/* ---------- Catálogo: barra de compra fija en la prenda ---------- */
+.cat-barra-compra {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 42;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  background: var(--superficie);
+  border-top: 1px solid var(--borde);
+  box-shadow: 0 -6px 20px rgb(0 0 0 / 0.12);
+  animation: subir-barra 0.2s ease-out;
+}
+@keyframes subir-barra {
+  from {
+    transform: translateY(100%);
+  }
+}
+.cat-barra-compra-precio {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.cat-barra-compra-precio strong {
+  font-family: var(--fuente-titulos);
+  font-size: 1.35rem;
+}
+.cat-barra-compra-precio s {
+  color: var(--texto-2);
+  font-size: 0.85rem;
+}
+.cat-barra-compra .cat-btn {
+  flex: 1;
+  max-width: 260px;
+}
+body.con-barra-compra .cat-pedido-flotante {
+  display: none;
+}
+body.con-barra-compra .cat-wa-flotante {
+  bottom: calc(84px + env(safe-area-inset-bottom));
+}
+
+/* ---------- Catálogo: opiniones ---------- */
+.cat-estrellas {
+  display: inline-flex;
+  gap: 1px;
+  color: rgb(128 128 128 / 0.35);
+  line-height: 1;
+}
+.cat-estrellas .llena {
+  color: #f2a91c;
+}
+.cat-puntaje {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.cat-puntaje > span:first-child {
+  color: #f2a91c;
+}
+.cat-opiniones {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 36px;
+}
+.cat-opiniones-resumen {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--borde);
+}
+.cat-opiniones-resumen h2 {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: 1.5rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.cat-opiniones-resumen > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cat-opinion {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--borde);
+}
+.cat-opinion p {
+  margin: 0;
+  line-height: 1.5;
+}
+.cat-opinion-cabeza {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.cat-opinion-avatar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--superficie-2);
+  font-weight: 600;
+}
+.cat-opinion-check {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--fondo);
+  border-radius: 50%;
+  background: var(--texto);
+  color: var(--fondo);
+}
+.cat-opinion-quien {
+  display: flex;
+  flex-direction: column;
+}
+.cat-opinion-fecha {
+  font-size: 0.85rem;
+}
+.cat-opinion-prenda {
+  align-self: flex-start;
+  color: var(--texto-2);
+  font-size: 0.85rem;
+}
+.cat-opinion-fotos {
+  display: flex;
+  gap: 8px;
+}
+.cat-opinion-fotos img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+/* En inicio: tarjetas deslizables de lado. */
+.cat-opiniones-inicio .cat-opiniones-carrusel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 14px 0 6px;
+  scroll-snap-type: x mandatory;
+}
+.cat-opiniones-inicio .cat-opinion {
+  flex: 0 0 min(280px, 82%);
+  padding: 16px;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  background: var(--superficie);
+  scroll-snap-align: start;
+}
+
+/* Página para dejar la opinión */
+.cat-opinar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 560px;
+}
+.cat-opinar-titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: 1.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.cat-opinar-estrellas {
+  display: flex;
+  gap: 6px;
+}
+.cat-opinar-estrellas button {
+  padding: 0 2px;
+  border: 0;
+  background: none;
+  color: rgb(128 128 128 / 0.35);
+  font-size: 2.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.cat-opinar-estrellas button.llena {
+  color: #f2a91c;
+}
+.cat-opinar-prendas {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.cat-opinar-prenda {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 6px;
+  border: 1.5px solid var(--borde);
+  border-radius: 10px;
+  background: var(--superficie);
+  color: var(--texto);
+  font: inherit;
+  cursor: pointer;
+}
+.cat-opinar-prenda.activo {
+  border-color: var(--texto);
+}
+.cat-opinar-prenda img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.cat-opinar-fotos {
+  display: flex;
+  gap: 8px;
+}
+.cat-opinar-foto,
+.cat-opinar-agregar {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  border-radius: 8px;
+}
+.cat-opinar-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.cat-opinar-foto button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 0.65);
+  color: #fff;
+  cursor: pointer;
+}
+.cat-opinar-agregar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1.5px dashed var(--borde);
+  color: var(--texto-2);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.cat-opinar-listo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 0;
+  text-align: center;
+}
+
+.opinion-estrellas {
+  color: #f2a91c;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}

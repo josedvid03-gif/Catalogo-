@@ -15,11 +15,13 @@ import { Ventas } from './pages/Ventas'
 import { Ajustes } from './pages/Ajustes'
 import { Catalogo, MarcoCatalogo } from './pages/catalogo/Catalogo'
 import { PrendaPublica } from './pages/catalogo/Prenda'
+import { OpinarPagina } from './pages/catalogo/Opiniones'
 import { Clientes, ClienteDetalle } from './pages/Clientes'
 import { Reportes } from './pages/Reportes'
 import { Exportar } from './pages/Exportar'
 import { Mensajes } from './pages/Mensajes'
 import { Promociones } from './pages/Promociones'
+import { OpinionesEquipo } from './pages/OpinionesEquipo'
 import { Importar } from './pages/Importar'
 import { Costos } from './pages/Costos'
 import { Inversores } from './pages/Inversores'
@@ -60,6 +62,7 @@ function AppPrivada() {
         <Route path="exportar" element={<Exportar />} />
         <Route path="mas" element={<Mas />} />
         <Route path="mensajes" element={<Mensajes />} />
+        <Route path="opiniones" element={<OpinionesEquipo />} />
         <Route path="ajustes" element={<Ajustes />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
@@ -76,6 +79,7 @@ export function App() {
           <Route path="/catalogo" element={<MarcoCatalogo />}>
             <Route index element={<Catalogo />} />
             <Route path="p/:id" element={<PrendaPublica />} />
+            <Route path="opinar/:token" element={<OpinarPagina />} />
           </Route>
           <Route
             path="/*"
