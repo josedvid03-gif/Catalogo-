@@ -15,6 +15,7 @@ import {
 } from './datos'
 import { GuiaTallas, InfoCompra, tablasPara } from './Ayudas'
 import { OpinionesInicio, PuntajePrenda } from './Opiniones'
+import { Campana } from './Campana'
 
 /** Videos de la marca que vienen con la página y tienen versión vertical para celular. */
 const VIDEO_VERTICAL: Record<string, string> = { '/video/portada.mp4': '/video/portada-vertical.mp4' }
@@ -641,6 +642,8 @@ export function Catalogo() {
           </span>
         </button>
       )}
+
+      {!filtrando && <Campana />}
 
       <main className="cat-cuerpo">
         <div className="cat-filtros">

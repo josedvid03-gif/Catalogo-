@@ -840,6 +840,14 @@ alter table public.ajustes alter column video_portada drop default;
 alter table public.ajustes add column if not exists sellos jsonb not null
   default '["100% original", "Pago seguro", "Envíos a toda Colombia", "Atención por WhatsApp"]'::jsonb;
 alter table public.ajustes add column if not exists frase_prenda text;
+-- Fotos de campaña: [{"foto": "...", "titulo": "...", "enlace": "/catalogo?c=Buzo"}].
+-- La primera vez quedan las fotos de la marca; se cambian en Ajustes.
+alter table public.ajustes add column if not exists campana jsonb not null default '[
+  {"foto": "/campana/fuego.jpg", "titulo": "Nueva temporada", "enlace": ""},
+  {"foto": "/campana/calle.jpg", "titulo": "Nike New York", "enlace": "/catalogo?q=azul%20oscuro%20ny"},
+  {"foto": "/campana/cielo.jpg", "titulo": "Más que ropa, un estilo de vida", "enlace": ""}
+]'::jsonb;
+alter table public.ajustes alter column campana set default '[]'::jsonb;
 
 -- Catálogo público: fotos, precios, rebajas y tallas disponibles.
 -- Nunca expone costos ni datos de clientes.
@@ -854,7 +862,7 @@ as $$
                                'eslogan', eslogan, 'info', info_catalogo,
                                'envios', envios, 'cambios', cambios, 'guia_tallas', guia_tallas,
                                'video', video_portada,
-                               'sellos', sellos, 'frase', frase_prenda,
+                               'sellos', sellos, 'frase', frase_prenda, 'campana', campana,
                                'pago', json_build_object('nequi', pago_nequi, 'titular', pago_titular,
                                                          'qr', pago_qr, 'otros', pago_otros))
       from public.ajustes where id = 1

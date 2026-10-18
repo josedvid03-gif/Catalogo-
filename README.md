@@ -48,6 +48,8 @@ Se instala en la pantalla de inicio como una app y todos los dispositivos ven lo
     y muestra **cómo pagar por Nequi** (número con botón copiar y QR).
   - Botón flotante de **WhatsApp** y **preguntas rápidas** en cada prenda.
   - **Video de portada** de fondo detrás del logo (se cambia o se quita en Ajustes).
+  - **La campaña**: fotos de campaña (lookbook) debajo del video, deslizables; cada una puede llevar a una
+    categoría, una prenda o las rebajas (Ajustes → Campaña).
   - **Guía de tallas** con tablas por categoría (Ajustes → Guía de tallas; trae una de ejemplo).
   - **Envíos, cambios y pagos** visibles en el catálogo y en cada prenda.
   - En cada prenda: **frase de impulso** ("¡Llévala hoy antes de que se agote!"), **sellos de confianza**
@@ -154,6 +156,7 @@ en Supabase abre **SQL Editor → New query**, pega el archivo indicado y presio
 | [`supabase/actualizaciones/05-tallas-envios.sql`](supabase/actualizaciones/05-tallas-envios.sql) | Guía de tallas, envíos y cambios, y video de portada |
 | [`supabase/actualizaciones/06-sellos-frase.sql`](supabase/actualizaciones/06-sellos-frase.sql) | Sellos de confianza y frase de impulso en cada prenda |
 | [`supabase/actualizaciones/07-opiniones.sql`](supabase/actualizaciones/07-opiniones.sql) | Opiniones de clientes (con compra verificada) |
+| [`supabase/actualizaciones/08-campana.sql`](supabase/actualizaciones/08-campana.sql) | Campaña (fotos del inicio del catálogo) |
 
 Si instalas desde cero, basta con `supabase/schema.sql` (ya incluye todo).
 

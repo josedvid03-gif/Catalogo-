@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { supabase, datos } from '../../lib/supabase'
 import { useCarga } from '../../lib/hooks'
 import { porcentajeRebaja } from '../../lib/format'
-import type { TablaTallas } from '../../lib/types'
+import type { FotoCampana, TablaTallas } from '../../lib/types'
 
 export interface VarianteCatalogo {
   id: string
@@ -36,6 +36,7 @@ export interface TiendaCatalogo {
   video?: string | null
   sellos?: string[]
   frase?: string | null
+  campana?: FotoCampana[]
   pago?: { nequi: string | null; titular: string | null; qr: string | null; otros: string | null }
 }
 

@@ -68,6 +68,15 @@ export interface Ajustes {
   video_portada: string | null
   sellos: string[]
   frase_prenda: string | null
+  campana: FotoCampana[]
+}
+
+/** Foto de la campaña (lookbook) del inicio del catálogo. */
+export interface FotoCampana {
+  foto: string
+  titulo: string
+  /** A dónde lleva al tocarla: '/catalogo?c=Buzo', '/catalogo/p/…', '/catalogo?rebajas' o vacío. */
+  enlace: string
 }
 
 /** Una tabla de la guía de tallas (ej. "Buzos y camibuzos"), medidas en cm. */

@@ -9,6 +9,7 @@ import { BotonAccion, CajaError } from '../components/Comunes'
 import { Icono } from '../components/Icono'
 import { AsesoresAjustes } from '../components/AsesoresAjustes'
 import { GuiaTallasAjustes, limpiarGuia } from '../components/GuiaTallasAjustes'
+import { CampanaAjustes } from '../components/CampanaAjustes'
 
 export function Ajustes() {
   const avisar = useAvisar()
@@ -57,10 +58,18 @@ export function Ajustes() {
       sellos: (form.sellos ?? []).map((s) => s.trim()).filter(Boolean),
       frase_prenda: form.frase_prenda?.trim() || null,
     }
+    const campana = { campana: (form.campana ?? []).map((f) => ({ ...f, titulo: f.titulo.trim() })) }
     const falta = (e: { code?: string } | null) => e && (e.code === 'PGRST204' || e.code === '42703')
     try {
       // Se intenta guardar todo; si faltan actualizaciones de la base de datos, se guarda lo que se pueda.
-      let r = await supabase.from('ajustes').update({ ...basicos, ...catalogo, ...pagos, ...extras, ...prenda }).eq('id', 1)
+      let r = await supabase
+        .from('ajustes')
+        .update({ ...basicos, ...catalogo, ...pagos, ...extras, ...prenda, ...campana })
+        .eq('id', 1)
+      if (falta(r.error)) {
+        r = await supabase.from('ajustes').update({ ...basicos, ...catalogo, ...pagos, ...extras, ...prenda }).eq('id', 1)
+        if (!r.error) avisar('Para guardar la campaña falta la actualización 08 de la base de datos', 'error')
+      }
       if (falta(r.error)) {
         r = await supabase.from('ajustes').update({ ...basicos, ...catalogo, ...pagos, ...extras }).eq('id', 1)
         if (!r.error) avisar('Para guardar los sellos y la frase falta la actualización 06 de la base de datos', 'error')
@@ -320,6 +329,18 @@ export function Ajustes() {
             </BotonAccion>
           )}
         </div>
+      </section>
+
+      <section className="tarjeta">
+        <h2>Campaña (fotos del inicio)</h2>
+        <p className="sutil">
+          Salen en el catálogo como "La campaña", debajo del video. Fotos verticales se ven mejor. Cada una puede llevar a una
+          categoría, a una prenda o a las rebajas.
+        </p>
+        <CampanaAjustes valor={form.campana ?? []} onChange={(c) => setForm({ ...form, campana: c })} />
+        <BotonAccion className="btn btn-primario" onClick={guardar}>
+          Guardar ajustes
+        </BotonAccion>
       </section>
 
       <section className="tarjeta">

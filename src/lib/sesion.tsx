@@ -31,6 +31,7 @@ const AJUSTES_POR_DEFECTO: Ajustes = {
   video_portada: null,
   sellos: [],
   frase_prenda: null,
+  campana: [],
   pago_qr: null,
   pago_otros: null,
 }
