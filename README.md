@@ -58,6 +58,12 @@ Se instala en la pantalla de inicio como una app y todos los dispositivos ven lo
     opinión** le llega al cliente un enlace personal por WhatsApp; esas salen como **Compra verificada**.
     Ninguna se publica sin aprobarla en **Más → Opiniones**.
   - **Barra de compra fija** abajo en cada prenda al bajar por la página.
+  - **Comprar ahora**: lleva directo al pedido con la prenda (datos de envío y WhatsApp); "Agregar a la
+    bolsa" queda para quien lleva varias.
+  - **Vista previa al compartir**: el enlace de una prenda en WhatsApp, Instagram o Facebook muestra su foto,
+    nombre y precio (`api/prenda.js`, solo para los robots de esas apps).
+- **Medición del catálogo** (Reportes → Lo más visto): visitas, prendas vistas, interés y pedidos por
+  WhatsApp, sin guardar datos de nadie. Además, Vercel Analytics (se activa en Vercel → Analytics).
   - **Nunca muestra costos ni ganancias.**
 - **Varios WhatsApp (asesores)**: en Ajustes agregas los números de tus asesores; a cada cliente del
   catálogo le toca uno (siempre el mismo) y ve "Te atiende: …".
@@ -157,6 +163,7 @@ en Supabase abre **SQL Editor → New query**, pega el archivo indicado y presio
 | [`supabase/actualizaciones/06-sellos-frase.sql`](supabase/actualizaciones/06-sellos-frase.sql) | Sellos de confianza y frase de impulso en cada prenda |
 | [`supabase/actualizaciones/07-opiniones.sql`](supabase/actualizaciones/07-opiniones.sql) | Opiniones de clientes (con compra verificada) |
 | [`supabase/actualizaciones/08-campana.sql`](supabase/actualizaciones/08-campana.sql) | Campaña (fotos del inicio del catálogo) |
+| [`supabase/actualizaciones/09-medicion.sql`](supabase/actualizaciones/09-medicion.sql) | Medición del catálogo (lo más visto) |
 
 Si instalas desde cero, basta con `supabase/schema.sql` (ya incluye todo).
 

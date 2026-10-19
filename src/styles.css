@@ -4092,3 +4092,9 @@ body.con-barra-compra .cat-wa-flotante {
 .girar-90 {
   transform: rotate(90deg);
 }
+
+/* Prenda: "Comprar ahora" principal y "Agregar a la bolsa" debajo */
+.cat .cat-btn-agregar {
+  min-height: 50px;
+  font-size: 0.85rem;
+}

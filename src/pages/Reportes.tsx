@@ -4,6 +4,7 @@ import { useCarga } from '../lib/hooks'
 import { cop, mesActual, moverMes, nombreMes, num } from '../lib/format'
 import { fechaColombia } from '../lib/inversiones'
 import { CajaError, Cargando, Dato, Vacio } from '../components/Comunes'
+import { LoMasVisto } from '../components/LoMasVisto'
 
 interface VentaR {
   id: string
@@ -340,6 +341,7 @@ export function Reportes() {
         </>
       )}
       {carga.cargando && r && <Cargando texto="Actualizando…" />}
+      <LoMasVisto />
     </div>
   )
 }

@@ -298,7 +298,7 @@ function leerDatos(): DatosEnvio {
 
 function Pedido() {
   const avisar = useAvisar()
-  const { tienda, pedido, cambiarCantidad, quitar, vaciar, maximo, pedidoAbierto, setPedidoAbierto, asesor, registrar } =
+  const { tienda, pedido, cambiarCantidad, quitar, vaciar, maximo, pedidoAbierto, setPedidoAbierto, asesor, registrar, medir } =
     useCatalogo()
   const [d, setD] = useState<DatosEnvio>(leerDatos)
   const [verQr, setVerQr] = useState(false)
@@ -372,6 +372,8 @@ function Pedido() {
       cliente_direccion: envio ? [d.direccion.trim(), d.barrio.trim()].filter(Boolean).join(' · ') : undefined,
       entrega: d.entrega,
     })
+    medir('pedido')
+    for (const id of new Set(pedido.map((l) => l.productoId))) medir('pedido', id)
     window.open(enlaceWhatsapp(tienda.whatsapp, texto), '_blank', 'noopener')
   }
 

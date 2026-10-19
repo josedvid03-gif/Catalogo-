@@ -101,6 +101,21 @@ interface Ctx {
   setPedidoAbierto: (v: boolean) => void
   asesor: Asesor | null
   registrar: (d: DatosContacto) => void
+  /** Suma 1 al contador del catálogo (visitas, vistas, bolsa, comprar, pedidos). */
+  medir: (tipo: TipoEvento, productoId?: string) => void
+}
+
+export type TipoEvento = 'visita' | 'vista' | 'bolsa' | 'comprar' | 'pedido'
+
+/** Visitas y vistas se cuentan una vez por sesión (no se infla al recargar). */
+function primeraVezEnSesion(clave: string): boolean {
+  try {
+    if (sessionStorage.getItem(clave)) return false
+    sessionStorage.setItem(clave, '1')
+  } catch {
+    /* sin almacenamiento: se cuenta igual */
+  }
+  return true
 }
 
 const Contexto = createContext<Ctx | null>(null)
@@ -230,6 +245,16 @@ export function ProveedorCatalogo({ children }: { children: ReactNode }) {
     [asesor],
   )
 
+  const medir = useCallback((tipo: TipoEvento, productoId?: string) => {
+    if ((tipo === 'visita' || tipo === 'vista') && !primeraVezEnSesion(`medido-${tipo}-${productoId ?? ''}`)) return
+    // Si falta la actualización 09 simplemente no se cuenta.
+    void supabase.rpc('registrar_evento', { p_tipo: tipo, p_producto: productoId ?? null }).then(
+      () => undefined,
+      () => undefined,
+    )
+  }, [])
+  useEffect(() => medir('visita'), [medir])
+
   const valor: Ctx = {
     tienda: carga.data?.tienda ?? null,
     prendas: carga.data?.prendas ?? [],
@@ -248,6 +273,7 @@ export function ProveedorCatalogo({ children }: { children: ReactNode }) {
     setPedidoAbierto,
     asesor,
     registrar,
+    medir,
   }
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>
 }

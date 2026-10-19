@@ -33,7 +33,7 @@ function useArchivoFoto(p: PrendaCatalogo | undefined) {
 export function PrendaPublica() {
   const { id } = useParams()
   const avisar = useAvisar()
-  const { prendas, tienda, cargando, agregar, setPedidoAbierto, pedido, registrar } = useCatalogo()
+  const { prendas, tienda, cargando, agregar, setPedidoAbierto, pedido, registrar, medir } = useCatalogo()
   const p = prendas.find((x) => x.id === id)
   const [varianteId, setVarianteId] = useState<string | null>(null)
   const [foto, setFoto] = useState(0)
@@ -62,6 +62,10 @@ export function PrendaPublica() {
   useEffect(() => {
     if (p && tienda) document.title = `${p.nombre} · ${tienda.nombre}`
   }, [p, tienda])
+  const idVista = p?.id
+  useEffect(() => {
+    if (idVista) medir('vista', idVista)
+  }, [idVista, medir])
 
   // Barra de compra fija abajo cuando el botón principal ya quedó arriba, fuera de la pantalla.
   const hayPrenda = Boolean(p)
@@ -115,6 +119,20 @@ export function PrendaPublica() {
   const textoCompartir = `${p.nombre}${p.marca && !p.nombre.toLowerCase().includes(p.marca.toLowerCase()) ? ` (${p.marca})` : ''} — ${cop(p.precio)}${
     d ? ` (antes ${cop(p.precio_antes!)})` : ''
   }`
+
+  const agregarABolsa = () => {
+    if (!elegida) return
+    agregar(p, elegida)
+    medir('bolsa', p.id)
+    avisar('Agregado a tu bolsa')
+  }
+  /** Para quien compra una sola prenda: la agrega y abre el pedido de una vez (datos de envío y WhatsApp). */
+  const comprarAhora = () => {
+    if (!elegida) return
+    if (!enPedido) agregar(p, elegida)
+    medir('comprar', p.id)
+    setPedidoAbierto(true)
+  }
 
   const mensajePregunta = (pregunta: string) =>
     `Hola 👋 ${pregunta}${pregunta.endsWith('?') ? '' : ':'}\n${p.nombre}${
@@ -237,14 +255,17 @@ export function PrendaPublica() {
             ref={botonCompra}
             className="cat-btn cat-btn-oscuro cat-btn-bloque"
             disabled={!elegida}
-            onClick={() => {
-              if (!elegida) return
-              agregar(p, elegida)
-              avisar('Agregado a tu pedido')
-            }}
+            onClick={() => comprarAhora()}
           >
-            <Icono nombre="bolsa" />
-            {elegida ? (enPedido ? 'Agregar otra' : 'Agregar al pedido') : 'Elige una talla'}
+            {elegida ? 'Comprar ahora' : 'Elige una talla'}
+          </button>
+          <button
+            className="cat-btn cat-btn-contorno-oscuro cat-btn-bloque cat-btn-agregar"
+            disabled={!elegida}
+            onClick={() => agregarABolsa()}
+          >
+            <Icono nombre="bolsa" tam={18} />
+            {enPedido ? 'Agregar otra a la bolsa' : 'Agregar a la bolsa'}
           </button>
           {enPedido && (
             <button className="enlace centrado" onClick={() => setPedidoAbierto(true)}>
@@ -336,11 +357,10 @@ export function PrendaPublica() {
                 document.querySelector('.cat-elegir')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
                 return
               }
-              agregar(p, elegida)
-              avisar('Agregado a tu pedido')
+              comprarAhora()
             }}
           >
-            <Icono nombre="bolsa" tam={18} /> {elegida ? 'Agregar al pedido' : 'Elegir talla'}
+            {elegida ? 'Comprar ahora' : 'Elegir talla'}
           </button>
         </div>
       )}
