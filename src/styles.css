@@ -4098,3 +4098,10 @@ body.con-barra-compra .cat-wa-flotante {
   min-height: 50px;
   font-size: 0.85rem;
 }
+
+.avisos-pasos {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}

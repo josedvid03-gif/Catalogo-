@@ -38,6 +38,8 @@ export default defineConfig({
         navigateFallback: '/index.html',
         // Los datos siempre se piden en línea; solo se guarda la app.
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // Notificaciones al celular (ventas y pedidos).
+        importScripts: ['sw-avisos.js'],
       },
     }),
   ],

@@ -8,6 +8,7 @@ import { ocultarNombre } from '../lib/format'
 import { BotonAccion, CajaError } from '../components/Comunes'
 import { Icono } from '../components/Icono'
 import { AsesoresAjustes } from '../components/AsesoresAjustes'
+import { AvisosAjustes } from '../components/AvisosAjustes'
 import { GuiaTallasAjustes, limpiarGuia } from '../components/GuiaTallasAjustes'
 import { CampanaAjustes } from '../components/CampanaAjustes'
 
@@ -467,6 +468,8 @@ export function Ajustes() {
           Guardar ajustes
         </BotonAccion>
       </section>
+
+      <AvisosAjustes />
 
       <AsesoresAjustes />
 

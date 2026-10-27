@@ -62,6 +62,10 @@ Se instala en la pantalla de inicio como una app y todos los dispositivos ven lo
     bolsa" queda para quien lleva varias.
   - **Vista previa al compartir**: el enlace de una prenda en WhatsApp, Instagram o Facebook muestra su foto,
     nombre y precio (`api/prenda.js`, solo para los robots de esas apps).
+- **Notificaciones al celular** (Ajustes → Notificaciones en este celular): aviso cuando alguien del equipo
+  registra una venta y cuando un cliente envía un pedido desde el catálogo. Cada persona las activa en su
+  celular (en iPhone, primero se agrega la app a la pantalla de inicio). La base de datos dispara el aviso
+  (pg_net) y `api/avisar.js` lo envía.
 - **Medición del catálogo** (Reportes → Lo más visto): visitas, prendas vistas, interés y pedidos por
   WhatsApp, sin guardar datos de nadie. Además, Vercel Analytics (se activa en Vercel → Analytics).
   - **Nunca muestra costos ni ganancias.**
@@ -164,6 +168,7 @@ en Supabase abre **SQL Editor → New query**, pega el archivo indicado y presio
 | [`supabase/actualizaciones/07-opiniones.sql`](supabase/actualizaciones/07-opiniones.sql) | Opiniones de clientes (con compra verificada) |
 | [`supabase/actualizaciones/08-campana.sql`](supabase/actualizaciones/08-campana.sql) | Campaña (fotos del inicio del catálogo) |
 | [`supabase/actualizaciones/09-medicion.sql`](supabase/actualizaciones/09-medicion.sql) | Medición del catálogo (lo más visto) |
+| [`supabase/actualizaciones/10-notificaciones.sql`](supabase/actualizaciones/10-notificaciones.sql) | Notificaciones al celular (ventas y pedidos) |
 
 Si instalas desde cero, basta con `supabase/schema.sql` (ya incluye todo).
 
