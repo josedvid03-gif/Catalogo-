@@ -38,7 +38,7 @@ const ESTADOS: { id: Estado; nombre: string; clase: string }[] = [
   { id: 'vendido', nombre: 'Vendido', clase: 'etiqueta-bien' },
   { id: 'descartado', nombre: 'Descartado', clase: '' },
 ]
-const TIPO: Record<Contacto['tipo'], string> = { pedido: 'Pedido', pregunta: 'Pregunta', general: 'Mensaje' }
+const TIPO: Record<Contacto['tipo'], string> = { pedido: 'Pedido', pregunta: 'Pregunta', general: 'Abrió WhatsApp' }
 const PERIODOS = [
   { dias: 1, nombre: 'Hoy' },
   { dias: 7, nombre: '7 días' },
@@ -130,7 +130,8 @@ export function Mensajes() {
         <h1>Mensajes</h1>
       </div>
       <p className="sutil">
-        Cada vez que un cliente toca un botón de WhatsApp en el catálogo queda aquí, con el asesor que le tocó. La
+        Cada vez que un cliente toca un botón de WhatsApp en el catálogo queda aquí, con el asesor que le tocó. Esto se
+        guarda al tocar el botón: si el cliente no le dio «Enviar» en WhatsApp, el mensaje no le llega al asesor. La
         conversación en sí está en WhatsApp.
       </p>
 
