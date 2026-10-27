@@ -152,6 +152,8 @@ export function Reportes() {
         <h1>Reportes</h1>
       </div>
 
+      <LoMasVisto />
+
       <div className="chips">
         {[3, 6, 12].map((m) => (
           <button key={m} className={`chip ${meses === m ? 'chip-activo' : ''}`} onClick={() => setMeses(m)}>
@@ -341,7 +343,6 @@ export function Reportes() {
         </>
       )}
       {carga.cargando && r && <Cargando texto="Actualizando…" />}
-      <LoMasVisto />
     </div>
   )
 }

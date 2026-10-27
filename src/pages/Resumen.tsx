@@ -11,6 +11,7 @@ import { Icono } from '../components/Icono'
 import { cargarInversiones } from '../lib/datosInversiones'
 import { resumirInversion } from '../lib/inversiones'
 import { contarMensajesNuevos } from './Mensajes'
+import { resumenVisitas } from '../components/LoMasVisto'
 
 interface VentaMes {
   total: number
@@ -64,6 +65,7 @@ export function Resumen() {
   const deudaInversores = pagosInversores.reduce((s, c) => s + c.monto - c.pagado, 0)
 
   const mensajesNuevos = useCarga(contarMensajesNuevos).data ?? 0
+  const visitas = useCarga(resumenVisitas).data
 
   const error = inv.error || ventas.error || apartados.error
   if (error) {
@@ -153,6 +155,22 @@ export function Resumen() {
           {sinCosto} producto{sinCosto === 1 ? '' : 's'} sin costo de compra: la ganancia se ve más alta de lo real.
           Ponerlos →
         </Link>
+      )}
+
+      {visitas && (
+        <section className="seccion">
+          <div className="seccion-cabeza">
+            <h2>Catálogo</h2>
+            <Link to="/reportes" className="enlace">
+              Ver detalle →
+            </Link>
+          </div>
+          <div className="datos">
+            <Dato etiqueta="Visitas hoy" valor={num(visitas.hoy)} />
+            <Dato etiqueta="Visitas en 7 días" valor={num(visitas.semana)} />
+            <Dato etiqueta="Pedidos por WhatsApp (7 días)" valor={num(visitas.pedidos)} tono={visitas.pedidos ? 'bien' : undefined} />
+          </div>
+        </section>
       )}
 
       <section className="seccion">

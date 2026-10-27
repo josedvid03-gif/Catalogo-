@@ -60,9 +60,9 @@ export function LoMasVisto() {
   }, [carga.data])
 
   return (
-    <section className="tarjeta">
+    <section className="tarjeta" id="visitas">
       <div className="tarjeta-cabeza">
-        <h2>Lo más visto en el catálogo</h2>
+        <h2>Visitas al catálogo</h2>
       </div>
       <div className="chips">
         {PERIODOS.map((d) => (
@@ -133,4 +133,23 @@ export function LoMasVisto() {
       )}
     </section>
   )
+}
+
+/** Para Inicio: visitas al catálogo hoy y en 7 días, y pedidos de la semana (null si falta la actualización 09). */
+export async function resumenVisitas(): Promise<{ hoy: number; semana: number; pedidos: number } | null> {
+  const r = await supabase
+    .from('eventos_dia')
+    .select('dia, tipo, cantidad')
+    .eq('producto_id', GENERAL)
+    .in('tipo', ['visita', 'pedido'])
+    .gte('dia', hace(7))
+  if (r.error) return null
+  const filas = r.data as { dia: string; tipo: string; cantidad: number }[]
+  const hoy = hoyColombia()
+  const suma = (f: (x: (typeof filas)[number]) => boolean) => filas.filter(f).reduce((s, x) => s + x.cantidad, 0)
+  return {
+    hoy: suma((x) => x.tipo === 'visita' && x.dia === hoy),
+    semana: suma((x) => x.tipo === 'visita'),
+    pedidos: suma((x) => x.tipo === 'pedido'),
+  }
 }
