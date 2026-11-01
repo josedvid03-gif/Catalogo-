@@ -129,7 +129,30 @@ def save(name, rgba, pieces, pad=6):
 pieces = {}
 
 # ---------- Cabeza ----------
-save('cabeza', layer(head_m), pieces)
+# ---------- Cabeza, pelo y barba (separados para el movimiento secundario) ----------
+HAIR_COL = tuple(int(c) for c in sample(40, 300, 1))
+FACE_C, FACE_R = (193, 255), (124, 111)
+face_ell = (((xx - FACE_C[0]) / FACE_R[0]) ** 2 + ((yy - FACE_C[1]) / FACE_R[1]) ** 2) <= 1
+# Barba completa: zona blanca bajo el bigote
+bzone = (xx > 144) & (xx < 248) & (yy > 337) & (yy < 478)
+blab, _ = ndi.label(whitish & bzone)
+ids = np.unique(blab[(yy > 390) & (yy < 410) & (np.abs(xx - 195) < 6)])
+beard_full = np.isin(blab, ids[ids > 0])
+beard_full = ndi.binary_dilation(beard_full, iterations=int(3.5 * K)) & bzone & fg
+skin_like = ((b16[..., 0] - b16[..., 2]) > 22) & (b16.mean(-1) > 150) & head_m & (yy > 214)
+skin_like = ndi.binary_opening(skin_like, iterations=K)
+skin_reg = ndi.binary_dilation(ndi.binary_fill_holes(skin_like | face_ell), iterations=int(2.5 * K))
+hair_m = head_m & ~face_ell & ~skin_reg & (yy > 214) & ~beard_full
+hair_m = ndi.binary_opening(hair_m, iterations=K)
+head_core = head_m & ~hair_m & ~beard_full
+save('cabeza', layer(head_core), pieces)
+for k, side in {'L': xx < 193, 'R': xx >= 193}.items():
+    hm = hair_m & side
+    hl = layer(hm)
+    ext = ndi.binary_dilation(hm, iterations=int(9 * K)) & (face_ell | skin_reg) & side & (yy > 205) & (yy < 368)
+    hl = paint_under(hl, ext, HAIR_COL)
+    save(f'pelo_{k}', hl, pieces)
+save('barba', layer(ndi.binary_dilation(beard_full, iterations=int(1.5 * K)) & fg & (yy > 334)), pieces)
 
 # ---------- Torso ----------
 torso = layer(torso_m)
@@ -146,6 +169,20 @@ torso = paint_under(torso, neck.astype(bool), JACKET)
 # laterales del torso que quedan bajo los brazos
 side = poly_mask([(97, 440), (112, 440), (112, 600), (97, 600)]) | poly_mask([(274, 440), (288, 440), (288, 600), (274, 600)])
 torso = paint_under(torso, side, JACKET)
+# Faldones y pelvis (los faldones se mueven con resortes)
+b16t = torso.astype(np.int16)
+dpants = np.abs(big.astype(np.int16) - np.array(PANTS)).sum(-1)
+plab, _ = ndi.label((dpants < 70) & (yy >= 566) & (xx > 118) & (xx < 272) & torso_m)
+pid = plab[int(620 * K), int(195 * K)]
+pelvis_real = (plab == pid) if pid > 0 else np.zeros_like(fg)
+buckle = (((xx - 195) / 33) ** 2 + ((yy - 553) / 21) ** 2) <= 1
+skirt_m = torso_m & (yy >= 562) & ~pelvis_real & ~buckle
+for k, side in {'L': xx < 195, 'R': xx >= 195}.items():
+    save(f'faldon_{k}', layer(skirt_m & side), pieces)
+pel = layer(pelvis_real)
+pel = paint_under(pel, poly_mask([(98, 556), (292, 556), (296, 640), (240, 650), (195, 646), (150, 650), (94, 640)]), PANTS)
+save('pelvis', pel, pieces)
+torso[((yy >= 568) & ~buckle) | pelvis_real] = 0
 save('torso', torso, pieces)
 
 # ---------- Charreteras (van por encima de los brazos) ----------

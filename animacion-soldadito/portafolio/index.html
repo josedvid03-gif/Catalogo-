@@ -1,0 +1,163 @@
+<title>Soldadito Cascanueces</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  /* Layout: sala de proyección — la columna de pantalla (62×194) a la izquierda, ficha técnica a la derecha; luego breakdown a lo ancho */
+  :root {
+    --bg: #0b1230;          /* azul noche del uniforme */
+    --panel: #121b44;
+    --line: #26346f;
+    --fg: #e9eeff;
+    --muted: #9eaedc;
+    --ice: #b9d8fa;         /* cordones y charreteras */
+    --gold: #ffd23f;        /* estrellas del fondo */
+    --cheek: #f2553a;       /* mejillas */
+    --display: 'Young Serif', Georgia, 'Times New Roman', serif;
+    --body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.6;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 40px 64px;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 72px; }
+  header { display: grid; gap: 12px; max-width: 760px; }
+  .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ice); }
+  h1 { font-family: var(--display); font-weight: 400; font-size: clamp(40px, 7vw, 76px); line-height: 1.02; margin: 0; text-wrap: balance; }
+  h1 span { color: var(--gold); }
+  h2 { font-family: var(--display); font-weight: 400; font-size: clamp(26px, 3.6vw, 36px); margin: 0; text-wrap: balance; }
+  .lede { color: var(--muted); font-size: 18px; max-width: 62ch; margin: 0; }
+
+  .hero { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 48px; align-items: start; }
+  /* Marco tipo columna de tienda: franjas diagonales azul/blanco como en la maqueta */
+  .pillar { padding: 14px; border-radius: 6px; max-width: 100%;
+    background: repeating-linear-gradient(135deg, #1d3c9c 0 18px, #dfe9ff 18px 30px); box-shadow: 0 30px 60px #0009; }
+  .pillar .screen { background: #000; border: 4px solid #0a1640; border-radius: 3px; overflow: hidden; }
+  .pillar video { display: block; width: 100%; aspect-ratio: 62 / 194; height: auto; max-width: 100%; }
+  .pillar-cap { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-top: 12px; text-align: center; }
+
+  .sheet { display: grid; gap: 28px; min-width: 0; }
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: 12px 24px; margin: 0; padding: 24px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+  dt { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ice); padding-top: 3px; }
+  dd { margin: 0; min-width: 0; }
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; list-style: none; }
+  .chips li { border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-size: 14px; color: var(--fg); background: #ffffff06; }
+  .chips li b { color: var(--gold); font-weight: 600; }
+
+  section { display: grid; gap: 20px; }
+  .sec-head { display: grid; gap: 6px; max-width: 70ch; }
+  .sec-head p { margin: 0; color: var(--muted); }
+  .bd video { width: 100%; aspect-ratio: 16 / 9; height: auto; display: block; border-radius: 10px; border: 1px solid var(--line); background: #000; max-width: 100%; }
+
+  .timeline { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .timeline div { padding: 18px 16px; display: grid; gap: 6px; align-content: start; border-right: 1px solid var(--line); background: var(--panel); min-width: 0; }
+  .timeline div:nth-child(even) { background: #16214f; }
+  .timeline div:last-child { border-right: 0; }
+  .timeline .tc { font-family: var(--mono); font-size: 13px; color: var(--gold); font-variant-numeric: tabular-nums; }
+  .timeline strong { font-weight: 700; }
+  .timeline span { color: var(--muted); font-size: 14px; }
+
+  .rig { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 40px; align-items: center; }
+  .rig img { width: 100%; max-width: 300px; height: auto; display: block; filter: drop-shadow(0 18px 30px #0008); }
+  .rig ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 14px; }
+  .rig li { display: grid; grid-template-columns: 14px 1fr; gap: 12px; align-items: baseline; }
+  .rig li i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; transform: translateY(1px); }
+  .rig li p { margin: 0; }
+  .rig li small { display: block; color: var(--muted); font-size: 14px; }
+
+  footer { color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); padding-top: 20px; font-family: var(--mono); }
+
+  @media (max-width: 760px) {
+    .hero, .rig { grid-template-columns: minmax(0, 1fr); }
+    .pillar { max-width: 260px; margin: 0 auto; }
+    .rig img { margin: 0 auto; max-width: 220px; }
+    .timeline { grid-template-columns: minmax(0, 1fr); }
+    .timeline div { border-right: 0; border-bottom: 1px solid var(--line); }
+    .timeline div:last-child { border-bottom: 0; }
+    dl { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+    dd { margin-bottom: 10px; }
+  }
+  @media (prefers-reduced-motion: reduce) { video { animation: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Animación 2D · cutout · estilo cartoon</div>
+    <h1>Soldadito <span>Cascanueces</span></h1>
+    <p class="lede">Un baile de cinco segundos en bucle para las columnas de pantalla de una activación navideña en tienda. El personaje se anima con las piezas de su propia ilustración: se mueve igual que en el diseño aprobado, sin redibujarlo.</p>
+  </header>
+
+  <div class="hero">
+    <div>
+      <div class="pillar"><div class="screen">
+        <video id="final" src="final.mp4" poster="final.jpg" autoplay muted loop playsinline controls aria-label="Animación final del soldadito bailando"></video>
+      </div></div>
+      <div class="pillar-cap">pantalla de columna · 62 × 194 cm</div>
+    </div>
+    <div class="sheet">
+      <dl>
+        <dt>Duración</dt><dd><span class="num">5 s</span> en bucle perfecto · <span class="num">300</span> fotogramas</dd>
+        <dt>Cadencia</dt><dd><span class="num">60 fps</span> con desenfoque de movimiento (<span class="num">4</span> sub-fotogramas, obturador <span class="num">180°</span>)</dd>
+        <dt>Formato</dt><dd>Pantalla <span class="num">62 × 194 cm</span> · entrega a <span class="num">1080 × 3380 px</span> y <span class="num">620 × 1940 px</span>, con fondo o con canal alfa</dd>
+        <dt>Técnica</dt><dd>Cutout de <span class="num">18</span> piezas recortadas de la hoja de personaje · cinemática inversa en piernas · resortes y física secundaria</dd>
+        <dt>Pipeline</dt><dd>Recorte en Python · rig y coreografía en SVG/JavaScript · render en Chromium · codificación con ffmpeg</dd>
+      </dl>
+      <ul class="chips" aria-label="Principios de animación aplicados">
+        <li><b>Anticipación</b> antes de cada acción</li>
+        <li><b>Squash &amp; stretch</b> en saltos y aterrizajes</li>
+        <li><b>Overshoot</b> con resortes amortiguados</li>
+        <li><b>Follow-through</b> en barba, pelo y faldones</li>
+        <li><b>Arcos</b> desde cada articulación</li>
+        <li><b>Transferencia de peso</b> en los pasos</li>
+        <li><b>Ease in / out</b> con splines monótonas</li>
+        <li><b>Timing</b> a <span class="num">120 BPM</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <section class="bd">
+    <div class="sec-head">
+      <h2>Breakdown</h2>
+      <p>Final, rig con huesos, silueta y curvas. En las curvas, la línea discontinua es la clave que se anima y la línea de color es lo que hace el resorte: así se ve el sobre-impulso y el asentamiento que dan el carácter cartoon. La barba no tiene claves; la mueve la física.</p>
+    </div>
+    <video src="breakdown.mp4" poster="breakdown.jpg" muted loop playsinline controls preload="metadata" aria-label="Breakdown de la animación"></video>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Coreografía</h2>
+      <p>Diez tiempos a 120 BPM. Cada bloque abre con una anticipación y cierra en una pose que lleva a la siguiente.</p>
+    </div>
+    <div class="timeline">
+      <div><span class="tc">0.0 – 1.0 s</span><strong>Balanceo</strong><span>Entra en el ritmo, parpadea y se agacha para el primer movimiento.</span></div>
+      <div><span class="tc">1.0 – 2.0 s</span><strong>Saludo y paso</strong><span>Sube el brazo con rebote, agita la mano y cruza el peso al pie contrario.</span></div>
+      <div><span class="tc">2.0 – 3.0 s</span><strong>Brazos y caderas</strong><span>Ambos brazos arriba; las caderas marcan cada corchea.</span></div>
+      <div><span class="tc">3.0 – 4.0 s</span><strong>Pies y cabeza</strong><span>Patadas alternadas con brazos en contra y la cabeza marcando el compás.</span></div>
+      <div><span class="tc">4.0 – 5.0 s</span><strong>Salto y saludo</strong><span>Se agacha, salta estirado, aterriza aplastado y saluda con un guiño.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Rig</h2>
+      <p>La vista frontal de la hoja de personaje se separó en piezas. Las zonas que el dibujo original tapa (bajo la barba, bajo los brazos, la parte alta del pantalón) se rellenaron con los colores del propio dibujo para que nada se abra al moverse.</p>
+    </div>
+    <div class="rig">
+      <img src="rig_despiece.png" alt="Despiece del soldadito: cabeza, pelo, barba, torso, charreteras, brazos, antebrazos, faldones, pelvis, muslos y botas separados" width="588" height="1081">
+      <ul>
+        <li><i style="background:#ff8a00"></i><p>Huesos principales<small>Hombros, codos, cadera, torso y cabeza. Se animan por claves y pasan por resortes que añaden el rebote.</small></p></li>
+        <li><i style="background:#19c6ff"></i><p>Física secundaria<small>Barba, mechones, faldones y charreteras. Reaccionan a la aceleración y al giro de su pieza padre.</small></p></li>
+        <li><i style="background:var(--ice)"></i><p>Piernas con cinemática inversa<small>Los pies quedan fijos en el suelo; las rodillas se doblan solas cuando baja la cadera.</small></p></li>
+        <li><i style="background:var(--cheek)"></i><p>Capa de expresiones<small>Párpados con cierre progresivo, ojos felices, guiño y boca que ríe al ritmo.</small></p></li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Animación 2D cutout · 5 s · 60 fps · formato de columna 62 × 194 cm</footer>
+</div>
