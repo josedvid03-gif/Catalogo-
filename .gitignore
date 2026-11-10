@@ -7,3 +7,4 @@ dev-dist
 .DS_Store
 *.tsbuildinfo
 animacion-soldadito/portafolio/*.mp4
+animacion-soldadito/3d/node_modules/

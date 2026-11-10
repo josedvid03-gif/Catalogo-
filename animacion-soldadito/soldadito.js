@@ -445,6 +445,9 @@
   function drawFrame(t, opts = {}) {
     A = opts.assets;
     MODE = opts.modo || 'final';
+    if (MODE === 'solofondo') { // solo el fondo animado (para componer con el personaje 3D)
+      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="100%" height="100%">${background(t)}</svg>`;
+    }
     const P = poseAt(t);
     const ox = W / 2 - 195 * S, oy = GROUND - SOLE * S;
     const footLift = (P.feet.L.lift + P.feet.R.lift) / 2;
@@ -466,7 +469,7 @@
       ${opts.fondo ? background(t) : ''}
       <g transform="translate(${f(ox)} ${f(oy)}) scale(${S})">${MODE === 'final' ? shadow : ''}
         <g ${MODE === 'silueta' ? 'filter="url(#silf)"' : ''}>${body}</g></g>
-      ${opts.fondo ? foreground(t) : ''}
+      ${opts.fondo && MODE !== 'solofondo' ? foreground(t) : ''}
     </svg>`;
   }
 
