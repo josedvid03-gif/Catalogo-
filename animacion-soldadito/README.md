@@ -4,7 +4,13 @@ Animación de 5 s en bucle para las pantallas de las columnas (62 × 194 cm), he
 de la ilustración original** (`hoja_personaje.webp`, vista de frente). El personaje no se redibuja: sus partes
 se mueven, rotan y deforman ligeramente (squash & stretch), así que se ve igual al diseño aprobado.
 
-## Técnica (principios de animación)
+## Versión con volumen (3D con aspecto de ilustración)
+En `3d/` está la versión más reciente: el soldado como cuerpo 3D pintado como el dibujo (color plano suave y
+línea de contorno), con giros reales, marcha en profundidad y salto con vuelta completa. Ver `3d/README.md`.
+Videos: `videos/soldadito3d_baile_1080x3380_60fps.mp4`, `videos/soldadito3d_baile_620x1940_60fps.mp4` y
+`videos/soldadito3d_baile_alfa_1080x3380_60fps.webm` (fondo transparente).
+
+## Técnica de la versión 2D cutout (principios de animación)
 - **Pose a pose con splines monótonas**: las curvas pasan por cada clave sin frenazos ni rebotes falsos.
 - **Resortes amortiguados** en hombros, codos, torso, cabeza y squash: dan *overshoot* y asentamiento (el "snap" cartoon).
 - **Anticipación** antes de cada acción (agacharse antes del salto, recoger el brazo antes de levantarlo).
